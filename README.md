@@ -26,7 +26,7 @@ This project is a joint work with  **Eurofound** developed under **contract &#84
 
 <br>  
 
-The package has been updated to add patterns (from 39 to 59) to the country dynamics analysis, maps have also been added to the fiches.
+December 2022 -The package has been updated to add patterns (from 39 to 59) to the country dynamics analysis, maps have also been added to the fiches.
 
 You may use  *devtools* to  install the current version under development:   
 
