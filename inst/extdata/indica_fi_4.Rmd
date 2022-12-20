@@ -2,24 +2,25 @@
 output: 
   html_document:
     css: EUF.css
+    fig_crop: false
 params:
-      dataNow: "3/03/2021"
-      workingDF: NA
-      time_0: NA
-      time_t: NA
-      timeName: NA
-      indiType: 'highBest'
+      dataNow: "3/03/2020"
+      workingDF: 'emp_20_64_MS'
+      time_0: 2008
+      time_t: 2018
+      timeName: 'time'
+      indiType: 'lowBest'
       indicaT: NA
-      seleMeasure: NA
-      seleAggre: NA
+      seleMeasure: 'all'
+      seleAggre: 'EU12'
       x_angle: NA
-      data_res_download: FALSE
+      data_res_download: TRUE
       auth: 'Eurofound'
-      outFile: NA
-      outDir: NA
-      pdf_out: FALSE
-      workTB: !r iris
-      memStates: 'default'
+      outFile: "test_indica-fi-cust"
+      outDir: "../tt-fish"
+      pdf_out: TRUE
+      workTB: !r emp_20_64_MS
+      memStates: 'custom'
 ---
  
 
@@ -44,14 +45,9 @@ library(gridExtra)
 library(flextable)
 library(flexmix)
 library(officer)
-library(leaflet)
 library(magrittr)
-library(leaflet.extras)
 library(cowplot)
 library(png)
-library(htmltools)
-library(htmlwidgets)
-library(webshot)
  
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -75,23 +71,23 @@ knitr::opts_chunk$set(
 # input parameters
 params <- list()
 params$dataNow <- Sys.Date()
-params$time_0 <- 2005
-params$time_t <- 2010
+params$time_0 <- 2008
+params$time_t <- 2018
 params$timeName  <- 'time'
 params$workingDF  <- 'emp_20_64_MS'
 params$indicaT <- 'emp_20_64_MS'
 params$indiType<- 'lowBest' # highBest
 params$seleMeasure <- 'all'
-params$seleAggre <- 'custom' ##'EU12'
+params$seleAggre <- 'EU12'
 params$x_angle<- 45
 params$data_res_download <- TRUE
 params$auth <- 'A.P.Student'
 params$outFile <- "test_indica-fi-cust"
-#params$outDir <-
+# params$outDir <-
 params$outDir <-   "../tt-fish"
 params$pdf_out <- TRUE
-params$workTB <- iris
-params$memStates <- 'default'
+params$workTB <- emp_20_64_MS
+params$memStates <- 'custom'
 ```
 
 
@@ -99,12 +95,8 @@ params$memStates <- 'default'
 
 <br>
 <!-- center -->
-```{r image_grobs, fig.show = "hold", out.width = "30%", fig.align = "default"}
-
-knitr::include_graphics("eurofound.jpg")
-knitr::include_graphics("white_rectangle.png")
-knitr::include_graphics("eige_logo-share.jpg")
-```
+<img src="eurofound.jpg" width=248px height=163px>
+<!-- /center -->
 <br><br>
 
 <!--
@@ -120,37 +112,19 @@ body {
 
 This fiche shows the investigation of upward convergence of Member States in the selected indicator using the methodological framework of Eurofound (2018). Where upward convergence is the process in which Member States improve their performance in relation to a particular outcome or policy objective together with a decrease in disparities among them. From a methodological point of view, there is no single measure capable of capturing all the relevant aspects of the convergence, it is therefore essential to consider more than one measure in order to obtain a more comprehensive idea of the convergence dynamics.
 
-
-<br>  
-
-# The Gender Equality Index
-
-The [**Gender Equality Index**](https://eige.europa.eu/gender-equality-index/2020) is a tool
-to measure the progress of  gender equality in the EU, developed by the European Institute for Gender Equality.
-It gives more visibility to areas that need improvement and ultimately supports policy makers to design more effective gender equality measures.
-The Index comprises six core domains (Work, Money, Knowledge, Time, Power, Health) and two additional domains (Violence against women, Intersecting inequalities).
-Progress of gender equality is mainly measured by analysing trends in $31$ indicators distributed across the six core domains of the Index.
-
-The Index uses a scale of 1 to 100, where 1 is for total inequality and 100 is for total equality. The scores are based on the gaps between women and men and levels of achievement in six core domains – work, money, knowledge, time, power and health – and their subdomains
-
-Gender gap of the Full-time equivalent (FTE) employment rate.
-The full-time equivalent (FTE) employment rate is a unit to measure employed persons in a way that makes them comparable even though they may work a different number of hours per week. The unit is obtained by comparing an employee's average number of hours worked to the average number of hours worked by a full-time worker. A full-time worker is therefore counted as one FTE, while a part-time worker gets a score in proportion to the hours she or he works. For example, a part-time worker employed for 20 hours a week where full-time work consists of 40 hours, is counted as 0.5 FTE.
-
-
-
 <br>
 
 ### Fiche info 
 
    
 Today: `r params$dataNow`     
-R Package:   [**convergEU**](https://cran.r-project.org/package=convergEU)
+R Package: <a href='https://cran.r-project.org/package=convergEU'> **convergEU** </a>  
 Indicator: *`r params$indicaT`*  
 Indicator type: *`r params$indiType`*  
 Measures of convergence: *`r if(is.null(params$seleMeasure)){"none"}else{params$seleMeasure}`*   
 Aggregation: *`r params$seleAggre`*    
 Time window: *`r  params$timeName`*  from *`r as.numeric(params$time_0)`*  to *`r as.numeric(params$time_t)`*  
-Author: *Eurofund-EIGE* 
+Author: *`r params$auth`* 
 
    
    
@@ -180,7 +154,7 @@ wkDF <- params$workTB
  
 # wkDF
 # filtering
-wkDF1 <- dplyr::filter(wkDF, .data[[timeName]]   <= ptime_t & .data[[timeName]] >= ptime_0)
+wkDF1 <- dplyr::filter(wkDF, .data[[timeName]] <= ptime_t & .data[[timeName]] >= ptime_0)
 
 
 ## select variables-countries according to aggregation
@@ -375,7 +349,7 @@ The graph shows the times series trend of each Member State giving an idea of th
 <br>
 
 <img src="eurofound.jpg" width=50px height=40px>
-<br>
+<br> 
 ```{r fig.width=6,fig.height=5}
 colMS <- setdiff(names(wkDF2),timeName)
 
@@ -395,7 +369,6 @@ mGallEU <- ggplot2::ggplot(wkDF3,aes(x = time, y= Indicator,
                    vjust = 1,
                    hjust=1)) +
          ggplot2::ylab(indicaT) 
-         #ggplot2::guide_legend(reverse=TRUE)
 
 out_packed_list$allEUms <-  list()
 out_packed_list$allEUms$mGallEU <- mGallEU
@@ -414,8 +387,8 @@ mGallEU
  The graph gives an overview of the development in some basic descriptive statistics: unweighted average, median, the minimum and the maximum value in each year.
 
 <br>
- <img src="eurofound.jpg" width=50px height=40px>
-<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br> 
 ```{r fig.width=6,fig.height=5}
 colMS <- setdiff(names(wkDF2),timeName)
 
@@ -432,14 +405,13 @@ sintesiTB <- sintesiTB %>%
   
   
 riaFlat<-  sintesiTB  %>% tidyr::gather(key= "Stat",
-                value="Value",c("min", "mean_mSD", "mean", "median",
-                                "mean_pSD","max"))
+                value="Value", 
+                c("min", "mean_mSD", "mean", "median",
+                                "mean_pSD","max"), 
+                 )
 riaFlat$Stat <- factor(riaFlat$Stat,
-                       # levels= c("min", "mean_mSD", "mean", "median",
-                       #          "mean_pSD","max")
                        levels= c("min", "mean_mSD", "mean", "median",
-                                "mean_pSD","max")
-                       )
+                                "mean_pSD","max"))
 myStyle <-  c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash")
 myColors <- c("black","black","white","red","blue","blue")
 riaFlat <- dplyr::mutate(riaFlat,LineType = 0)    
@@ -477,8 +449,7 @@ sintesiTB$eticheMax <- sapply(seq(1,length(sintesiTB$max)),
 mGallSummary <- ggplot2::ggplot(riaFlat,aes(x = time,y= Value)) +
   ggplot2::geom_line( aes( colour=Stat ),linetype=riaFlat$mylty) +
   ggplot2::geom_point( aes( colour=Stat)) +
-  scale_colour_manual("Statistic",
-                      values=c(min="blue",
+  scale_colour_manual("Statistic",values=c(min="blue",
                                mean_mSD="red",
                                mean="black",
                                median="black",
@@ -491,9 +462,8 @@ mGallSummary <- ggplot2::ggplot(riaFlat,aes(x = time,y= Value)) +
                                mean_pSD = "mean+1*std.dev.",
                                max="max")
                       ) +
-  guides(shape = FALSE, colour = guide_legend(
-           override.aes = list(
-                           linetype =  c("min"="82",
+  guides(shape = "none", colour = guide_legend(
+           override.aes = list(linetype =  c("min"="82",
                                         "mean_mSD"="3313",
                                         "mean"="F1",
                                         "median"="66",
@@ -547,8 +517,8 @@ The graph gives an overall idea of the dispersion and some descriptive statistic
 
 <img src="eurofound.jpg" width=50px height=40px>
 <br> 
-```{r fig.width=6,fig.height=5}
-wkDF3 <- tidyr::gather(wkDF2, key = "Country",value="Indicator", colMS)
+```{r fig.width=6}
+wkDF3 <- tidyr::gather(wkDF2, key= "Country",value="Indicator",colMS)
     
 wkDF3$time <-  factor(wkDF3$time)
 condiBP <-   qplot(time,Indicator,data=wkDF3,geom="boxplot",
@@ -572,15 +542,9 @@ condiBP
 ```
  
 
-Legend:    
-
-  *  boxes height: first and third quartile (hinges)  
-  *  bold black horizontal segment: median
-  *  upper whisker: $min(max(x), Q_3 + 1.5 * IQR)$  
-  *  lower whisker: $max(min(x), Q_1 - 1.5 * IQR)$  
-  
-where $IQR = Q_3 - Q_1$ is the box length, that is the third quartile
-minus the first quartile. Overlaid  jittered points are shown in red.
+<br><br>
+<img src="legend.png"> 
+ 
  
  
  
@@ -603,7 +567,7 @@ The overall change can be upward or downward depending on the objective directio
 <br>
 <img src="eurofound.jpg" width=50px height=40px>
 <br>
-```{r,echo=FALSE, fig.width=6,fig.height=5}
+```{r,echo=FALSE,fig.width=6}
 
 cluster_mean_gr2 <- qplot(
       unlist(outMed[,timeName]),
@@ -712,14 +676,14 @@ semaforo
  
   
 
-```{r,echo=FALSE,results='asis'}
+```{r,echo=FALSE,results='asis', fig.width=6,fig.height=5}
 if(semaforo[["nega_val_indi"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_nobeta.Rmd", 
                                            quiet=TRUE, envir=environment())))
 }
 ```
 
-```{r,echo=FALSE,results='asis'}
+```{r,echo=FALSE,results='asis', fig.width=6,fig.height=5}
 if(semaforo[["beta"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_beta.Rmd", 
                                            quiet=TRUE, envir=environment())))
@@ -736,7 +700,7 @@ if(semaforo[["beta"]]){
 
         
 
-```{r,echo=FALSE,results='asis',eval=TRUE}
+```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["sigma"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_sigma.Rmd", 
                                            quiet=TRUE, envir=environment())))
@@ -747,7 +711,7 @@ if(semaforo[["sigma"]]){
  
 
 
-```{r,echo=FALSE,results='asis',eval=TRUE}
+```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["delta"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_delta.Rmd", 
                                            quiet=TRUE, envir=environment())))
@@ -762,7 +726,7 @@ if(semaforo[["delta"]]){
 
 
 
-```{r,echo=FALSE,results='asis',eval=TRUE}
+```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["gamma"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_gamma.Rmd", 
                                            quiet=TRUE, envir=environment())))
@@ -798,64 +762,97 @@ Understanding the dynamics is also necessary to better identify possible drivers
  of convergence and divergence as well as structural deficiencies or sustainable
  recoveries.
 
-
 <br><br> 
+<style>
+.vertical-text {
+	display: inline-block;
+	overflow: hidden;
+	width: 1.3em;
+}
+.vertical-text__inner {
+	display: inline-block;
+	white-space: nowrap;
+	line-height: 1.5;
+	transform: translate(0,100%) rotate(-90deg);
+	transform-origin: 0 0;
+}
+/* This element stretches the parent to be square
+   by using the mechanics of vertical margins  */
+.vertical-text__inner:after {
+	content: "";
+	display: block;
+	margin: -1.5em 0 100%;
+}
 
 
+body {
+	font: 11px/1 Arial, sans-serif;
+}
+
+table {
+	margin-top: 1em;
+}
+th,td {
+	border: 1px solid;
+	text-align:center;
+	font-weight: normal;
+	padding: 0.5em;
+}
+head{
+   color: blue;
+}
+</style>
+
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
 
 
-```{r,echo=FALSE}
-#altezzIG0 <- 3+7*(length(sele_soli_ms)/30)
-
-obe_lvl <- scoreb_yrs(wkDF2,timeName = timeName)$res$sco_level_num
-#curCountries <- names(obe_lvl)[-1]
-curCountries <- setdiff(names(obe_lvl),timeName)
-altezzIG00 <- 3+7*(length(curCountries)/30)
-```
-
-```{r,echo=FALSE}
+```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6}
 
 miniT <- min(wkDF2[,timeName])
 maxiT <- max(wkDF2[,timeName])
 breaks_x <- unlist(unique(wkDF2[,timeName]))
 etichY  <-  names(wkDF2)[-c(1)]
 names(etichY) <-  etichY
+
 myTB2 <- tidyr::gather(wkDF2, key = "id",
                        value = "profile",etichY)
 myTB2 <- dplyr::mutate(myTB2, position = rep(1:length(etichY),
                                              each=nrow(wkDF2)))
+
+
 ## change
 myTB3 <- tidyr::gather(wkDF2, key = "id",
                        value = "profile",etichY)
 myTB3$profile <- as.numeric(myTB3$profile)
 myTB4 <- myTB3 %>% group_by(time) %>% 
   mutate(Cluster = ntile(profile, 5))
+
 # df <- myTB4 %>% filter( time %in% c(maxiT,miniT))
 df2 <- myTB4 %>% select(time, id, Cluster) %>% spread(time, Cluster)
+
 df2 <- df2[,c(1,2,ncol(df2))]
 #calculate change between time t0 and time t1
-df2$change <- df2[3]-df2[2]
-names(df2)[4]<-"change" #not sure why I can't change the column name
+df2[4] <- df2[3]-df2[2]
 
-if(indiType == "highBest")
-{
-  df2$label_t_0<-NA
-  df2$label_t_0<-ifelse(df2[as.character(miniT)]==1,"Cluster 1 (lagging behind)",
-                        ifelse(df2[as.character(miniT)]==2,"Cluster 2",
-                               ifelse(df2[as.character(miniT)]==3, "Cluster 3",
-                                      ifelse(df2[as.character(miniT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
-  df2$label_t_1<-NA
-  df2$label_t_1<-ifelse(df2[as.character(maxiT)]==1,"Cluster 1 (lagging behind)",
-                        ifelse(df2[as.character(maxiT)]==2,"Cluster 2",
-                               ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
-                                      ifelse(df2[as.character(maxiT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
-  df2$label_change<-NA
-  df2$label_change<-ifelse(df2$change<=-2,"-2 clusters or more",
-                           ifelse(df2$change==-1,"-1 cluster",
-                                  ifelse(df2$change==0, "remained the same",
-                                         ifelse(df2$change==1,"+1 cluster", "+2 clusters or more"))))
-} else if(indiType == "lowBest")
-{
+names(df2)[4]<-"change" 
+df2$label_t_0<-NA
+df2$label_t_0<-ifelse(df2[as.character(miniT)]==1,"Cluster 1 (lagging behind)",
+                      ifelse(df2[as.character(miniT)]==2,"Cluster 2",
+                             ifelse(df2[as.character(miniT)]==3, "Cluster 3", 
+                                    ifelse(df2[as.character(miniT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
+df2$label_t_1<-NA
+df2$label_t_1<-ifelse(df2[as.character(maxiT)]==1,"Cluster 1 (lagging behind)",
+                      ifelse(df2[as.character(maxiT)]==2,"Cluster 2",
+                             ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
+                                    ifelse(df2[as.character(maxiT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
+df2$label_change<-NA
+df2$label_change<-ifelse(df2$change<=-2,"-2 clusters or more",
+                         ifelse(df2$change==-1,"-1 cluster",
+                                ifelse(df2$change==0, "remained the same",
+                                       ifelse(df2$change>=1 & df2$change<2,"+1 cluster", "+2 clusters or more"))))
+if(params$indiType == "lowBest"){
+  
   df2$label_t_0<-NA
   df2$label_t_0<-ifelse(df2[as.character(miniT)]==1,"Cluster 5 (top performer)",
                         ifelse(df2[as.character(miniT)]==2,"Cluster 4",
@@ -867,250 +864,53 @@ if(indiType == "highBest")
                                ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
                                       ifelse(df2[as.character(maxiT)]==4,"Cluster 2", "Cluster 1 (lagging behind)"))))
   df2$label_change<-NA
-  df2$label_change<-ifelse(df2$change<=-2,"+2 clusters or more",
-                           ifelse(df2$change==-1,"+1 cluster",
+  df2$label_change<-ifelse(df2$change>=2,"-2 clusters or more",
+                           ifelse(df2$change==1,"-1 cluster",
                                   ifelse(df2$change==0, "remained the same",
-                                         ifelse(df2$change==1,"-1 cluster", "-2 clusters or more"))))
+                                         ifelse(df2$change==-1, "+1 cluster", "+2 clusters or more"))))
 }
 
+write.csv(df2, "member_states_cluster.csv", row.names = F)
+msdf <- read.csv("member_states_cluster.csv")
+#get rid of columns not needed
+msdf<-msdf[,-c(2:4)]
+names(msdf)[2]<-paste("Cluster in year ",time_0,sep="")
+names(msdf)[3]<-paste("Cluster in year ",time_t,sep="")
+names(msdf)[4]<-"Change"
 
-geodata_countries <- get_eurostat_geospatial(output_class = "sf", 
-                                             resolution = "60", 
-                                             nuts_level = "0", 
-                                             year = "2016", make_valid = FALSE)  ##n get_eurostat_geospatial(output_class = "sf", resolution = "10",  :
-##   Default of 'make_valid' for 'output_class="sf"' will be changed in the future (see function details).
-map_data<- inner_join(geodata_countries, df2,by="id")
+ftab <- autofit(flextable(head(msdf,20))) 
+# ftab <- delete_part(ftab, part = "header")
+# ftab <- (ftab, values = c("ID", as.character(miniT), as.character(maxiT), "change", "label_t_0", "label_t_0", "label_change"))
+ftab <- theme_vanilla(ftab) 
 
-map_data$label_change<-factor(map_data$label_change,
-                              levels=c("-2 clusters or more",
-                                       "-1 cluster",
-                                       "remained the same",
-                                       "+1 cluster",
-                                       "+2 clusters or more"))
+ftab <- footnote(ftab,i = 1, j=1, part = 'header', value = as_paragraph(c("Please refer to member_states_cluster.csv file for the complete dataset")), ref_symbols = "*") %>% width(., width = 1)
+
+save_as_image(ftab,path = "memtab.png", zoom = 9, webshot = "webshot2")
+# DT::datatable(df2, rownames = F)
+```
+
+```{r,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
+tab <- "memtab.png"
+include_graphics(tab)
 ```
 
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
-```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
-factpal <- colorFactor("RdYlGn", map_data$label_t_0)
-
-tag.map.title <- tags$style(HTML("
-  .leaflet-control.map-title { 
-    transform: translate(-50%,20%);
-    position: fixed !important;
-    left: 40%;
-    text-align: center;
-    padding-left: 10px; 
-    padding-right: 10px; 
-    background: rgba(255,255,255,0.75);
-    font-weight: bold;
-    font-size: 28px;
-  }
-"))
-
-title <- tags$div(
-  tag.map.title, HTML("Indicator value in ", paste(ptime_0))
-)
-
-  
-#===========MAP_t_0==================================
-map_t_0 <- leaflet(data=map_data) %>%
-  #addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(fill=TRUE,
-              fillColor = ~factpal(label_t_0),
-              fillOpacity = 0.8,
-              opacity=0.1,
-              color = "black",
-              label= paste(map_data$CNTR_CODE,map_data$label_t_0, sep=" "),
-              weight = 1,
-              stroke = TRUE,
-              highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
-	      addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
-  setView(10,56.8, zoom=3.5) %>%  #set view on EU
-  setMapWidgetStyle(list(background= "white"))%>%
-  addLegend(position = c("topleft"),
-            pal=factpal,
-            values=map_data$label_t_0,
-            na.label = "NA",
-            opacity = 0.5,
-            labFormat = labelFormat(),
-            className = "info legend",
-  ) %>%
-  addControl(title, position = "topleft", className="map-title")
-
-out_packed_list$map_t_0 <- map_t_0
-  
-## save html to png
-saveWidget(map_t_0, "temp0.html", selfcontained = FALSE)
-webshot("temp0.html", file = "map_t_0.png",
-        cliprect = "viewport")
-  
-
-out_packed_list$map_t_0 <- map_t_0
-
-```
-
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
-map0 <- "map_t_0.png"
-# include_graphics(map0)
-```
-
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
-```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
-
-tag.map.title <- tags$style(HTML("
-  .leaflet-control.map-title { 
-    transform: translate(-50%,20%);
-    position: fixed !important;
-    left: 40%;
-    text-align: center;
-    padding-left: 10px; 
-    padding-right: 10px; 
-    background: rgba(255,255,255,0.75);
-    font-weight: bold;
-    font-size: 28px;
-  }
-"))
-
-title <- tags$div(
-  tag.map.title, HTML("Indicator value in ", paste(ptime_t))
-)
-
-#===========MAP_t_1==================================
-  factpal1 <- colorFactor("RdYlGn", map_data$label_t_1)
-  
-  map_t_1<-leaflet(data=map_data) %>% 
-    #addProviderTiles("CartoDB.Positron") %>%
-    addPolygons(fill=TRUE,
-                fillColor = ~factpal1(label_t_1),
-                fillOpacity = 0.8, 
-                opacity=0.1, 
-                color = "black",
-                label= paste(map_data$CNTR_CODE,map_data$label_t_1,sep=" "),
-                weight = 1,
-                stroke = TRUE,
-                highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
-    addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
-  setView(10,56.8, zoom=3.5) %>%  #set view on EU
-    setMapWidgetStyle(list(background= "white")) %>%
-    addLegend(position = c("topleft"),
-              pal=factpal1,
-              values=map_data$label_t_1,
-              na.label = "NA",
-              opacity = 0.5,
-              labFormat = labelFormat(),
-              className = "info legend",
-    ) %>%
-    addControl(title, position = "topleft", className="map-title")
-  
-  
-out_packed_list$map_t_1 <- map_t_1
-  
-#map_t_1
-## save html to png
-saveWidget(map_t_1, "temp1.html", selfcontained = FALSE)
-webshot("temp1.html", file = "map_t_1.png",
-        cliprect = "viewport")
-
-```
-
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
-map1 <- "map_t_1.png"
-# include_graphics(map1)
-```
 
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
-```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
-
-tag.map.title <- tags$style(HTML("
-  .leaflet-control.map-title { 
-    transform: translate(-50%,20%);
-    position: fixed !important;
-    left: 20%;
-    text-align: center;
-    padding-left: 10px; 
-    padding-right: 10px; 
-    background: rgba(255,255,255,0.75);
-    font-weight: bold;
-    font-size: 28px;
-  }
-"))
-
-title <- tags$div(
-  tag.map.title, HTML("Change: ",paste(ptime_t),"and",paste(ptime_0)))
-
-#===========MAP_change==================================
-#rgb(230, 97, 1)orange
-#rgb(253,184,99)light orange
-#ivory -ivory
-#rgb(146,197,222) light blue
-#rgb(53,132,172) darker blue - added
-
-palette_change <- colorFactor(palette=c(rgb(230,97,1, maxColorValue = 255), #red-orange
-                                        rgb(253,184,99, maxColorValue = 255), #light orange
-                                        rgb(255,255,240, maxColorValue = 255), #ivory
-                                        rgb(146,197,222, maxColorValue = 255), #lighter blue
-                                        rgb(53,132,172, maxColorValue = 255)), #darker blue
-                                        map_data$label_change)
-
-map_change<-leaflet(data=map_data) %>% 
-  #addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(fill=TRUE,
-              fillColor = ~palette_change(map_data$label_change),
-              fillOpacity = 0.8, 
-              opacity=0.1, 
-              color = "black" ,
-              label= paste(map_data$CNTR_CODE,map_data$label_change,sep=" "),
-              weight = 1,
-              stroke = TRUE,
-              highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
-  addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
-  setView(10,56.8, zoom=3.5) %>%  #set view on EU
-  setMapWidgetStyle(list(background= "white")) %>%
-  addLegend(position = c("topleft"),
-            pal=palette_change,
-            values=map_data$label_change,
-            na.label = "NA",
-            opacity = 0.5,
-            labFormat = labelFormat(),
-            className = "info legend",
-  ) %>%
-  addControl(title, position = "topleft", className="map-title")
-
-## save html to png
-saveWidget(map_change, "temp2.html", selfcontained = FALSE)
-webshot("temp2.html", file = "map_change.png",
-        cliprect = "viewport")
-
-out_packed_list$map_change <- map_change
-#map_change
-```
-
-
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
-map2 <- "map_change.png"
-# include_graphics(map2)
-```
-
-*These maps show the statistical values per countries.
 
 <br><br>
-
 
 #### Convergence and divergence patterns 
 
 
 
-The table represents convergence patterns of the 'aggregation' countries
+The table represents  convergence patterns of the 'aggregation' countries
  in the chosen time frame. The values in the table refer to the patterns shown in the
  graphical legend below.
+
+
+
+ 
 
 <style>
 .vertical-text {
@@ -2074,11 +1874,11 @@ save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
 ```
 
 
-```{r ,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
+ 
+```{r,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
 flxtab <- "flextab.png"
 include_graphics(flxtab)
 ```
- 
  
  
  
@@ -2117,6 +1917,38 @@ sam <- "gg_patt_same_annotated.png"
 include_graphics(sam)
 ```  
 
+
+<!--**Note:** 21 is none of the previous patterns and requires visual inspection.-->
+
+<br>
+ 
+Legend:     
+
+  * Indicator type: `r params$indiType`   
+  * solid black lines: Member States   
+  * solid blue lines: EU average  
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 <br><br>
 
 ### Total decrease and increase in the gap with the `r params$aggregation` mean  
@@ -2177,8 +2009,6 @@ Last `r date()`
 ```{r,echo=FALSE,eval=T}
 save(out_packed_list,file = out_packed_name)
 ```
-
-
 
 
 

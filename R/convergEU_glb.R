@@ -9,8 +9,8 @@
 #' available.
 #'
 #' @return  a list of constants and objects for package convergEU
-#' @details The following clusters of countries are stored: EU12, EU15, EU19, EU25,
-#'           EU27, EA, Eurozone. Current Member States are elements of EU27_2020.
+#' @details The following clusters of countries are stored: EU12, EU15, EU25,
+#'           EU27, EA, Euroarea. Current Member States are elements of EU27_2020.
 #'          The cluster geoRefEUF is composed of both Member States and other countries
 #'          (neighboring countries). The component "metaEUstat" contains the indicators'
 #'          information, while the component "paralintags" is for defining patterns for the Member States.
@@ -19,14 +19,11 @@
 #'
 #' @examples
 #'
-#' # Member States in the cluster Eurozone:
-#' convergEU_glb()$Eurozone
+#' # Member States in the cluster Euroarea:
+#' convergEU_glb()$Euroarea
 #'
 #' # Cluster EU12 of Member States:
 #' convergEU_glb()$EU12
-#'
-#' # Cluster EU19 of Member States:
-#' convergEU_glb()$EU19
 #'
 #' # Cluster EU27 of Member States after 31 jan 2020:
 #' convergEU_glb()$EU27
@@ -95,8 +92,8 @@ convergEU_glb <- function(){
           codeMS=c("BE", "DK", "FR", "DE", "EL", "IE", "IT",
                    "LU", "NL", "PT", "ES", "UK",
                    "AT","FI","SE") ))
-  ## this equal to Eurozone tag
-  EU19 <- Eurozone <- list(dates=c(NA,NA),
+  ## this equal to Euroarea tag
+  EA <- Euroarea <- list(dates=c(NA,NA),
                memberStates= dplyr::tibble(
                  MS = c("Austria", "Belgium", "Cyprus", "Estonia",
                         "Finland", "France", "Germany", "Greece", "Ireland", "Italy",
@@ -105,7 +102,16 @@ convergEU_glb <- function(){
                  codeMS = c("AT","BE", "CY", "EE", "FI", "FR", "DE", "EL", "IE",
                             "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK",
                             "SI", "ES")))
-
+  ## this equal to Euroarea tag
+  EA19 <- Euroarea <- list(dates=c(NA,NA),
+               memberStates= dplyr::tibble(
+                 MS = c("Austria", "Belgium", "Cyprus", "Estonia",
+                        "Finland", "France", "Germany", "Greece", "Ireland", "Italy",
+                        "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands",
+                        "Portugal", "Slovakia", "Slovenia", "Spain"),
+                 codeMS = c("AT","BE", "CY", "EE", "FI", "FR", "DE", "EL", "IE",
+                            "IT", "LV", "LT", "LU", "MT", "NL", "PT", "SK",
+                            "SI", "ES")))
 
   EU25 <-  list(
     dates = c("01/05/2004","31/12/2006"),
@@ -155,7 +161,7 @@ convergEU_glb <- function(){
     "HU", "LV", "LT", "MT", "PL", "SK", "SI", "BG", "RO", "HR")),
     row.names = c(NA,-28L), class = c("tbl_df", "tbl", "data.frame"))
     )
-   labeclust <- c( "Eurozone", "EA", "EU12", "EU15", "EU19", "EU25",
+   labeclust <- c( "Euroarea", "EA", "EA19", "EU12", "EU15", "EU25",
                                     "EU27_2007", "EU27_2019", "EU27_2020", "EU27", "EU28")
 
 
@@ -379,105 +385,123 @@ convergEU_glb <- function(){
 
 
   ### Social Indicators within scoreboard
-  scoreBoaTB <- structure(list(Sele = c(9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
-                        9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
-                        9, 9, 9), IndicatorID = c("I.01.01.00", "I.01.02.00", "I.01.04.00",
-                                                  "I.02.01.00", "I.02.02.00", "I.02.03.00", "I.03.01.00", "I.04.01.00",
-                                                  "I.04.02.00", "I.04.03.00", "I.04.04.00", "I.04.05.00", "I.04.06.00",
-                                                  "I.05.01.00", "II.06.01.00", "II.06.02.00", "II.06.03.00", "II.06.04.00",
-                                                  "II.07.01.00", "II.07.03.00", "II.07.04.00", "II.07.05.00", "II.07.06.00",
-                                                  "II.07.07.00", "II.08.01.00", "II.08.04.00", "III.09.01.00",
-                                                  "III.09.02.00", "III.09.03.00", "III.09.04.00", "III.09.05.00",
-                                                  "III.10.01.00", "III.11.01.00", "III.11.02.00", "III.11.03.00",
-                                                  "III.11.04.00", "III.12.01.00"),
-               Source = c("edat_lfse_14", "trng_lfse_01",
-                      "Eurostat: edat_lfse_03", "Eurostat: TESEM060", "Eurostat: TEPSR_LM210",
-                      "Eurostat: earn_gr_gpgr2", "Eurostat: ilc_di11", "Eurostat: ilc_peps01",
-                      "Eurostat: ilc_li02", "Eurostat: ilc_mddd11", "Eurostat: TEPSR_LM430",
-                      "Eurostat: TEPSR_LM440", "Eurostat: TEPSR_LM440", "Eurostat: TESEM150",
-                      "Eurostat: TESEM010", "Eurostat: TESEM120", "Eurostat: TEPSR_WC130",
-                      "Eurostat: TESEM140", "Eurostat: TESEM130", "Eurostat: TEPSR_WC220",
-                      "Eurostat: TEPSR_WC220", "Eurostat: TEPSR_WC220", "Eurostat: TEPSR_WC220",
-                      "Eurostat: TEPSR_WC230", "Eurostat: TEPSR_WC310", "Eurostat: TESOV110",
-                      "Eurostat: TESPM050", "Eurostat: TEPSR_SP110", "Eurostat: TEPSR_SP110",
-                      "Eurostat: TEPSR_SP110", "Eurostat: TESPN070", "Eurostat: TEPSR_SP210",
-                      "Eurostat: TESPM110", "tepsr_sp320", "tepsr_sp320", "Eurostat: TEPSR_SP310",
-                      "Eurostat: TEPSR_SP410"),
-               Preset = c("age: 18-24; activyty: population",
-                    "age 25-64;", "age: 30-34; ISCED: 5-8", "age: 20-64; indic_EM: EMP_LFS",
-                    "age:20-64;", "NACE_R2: B-S_X_O", "age: TOTAL", "AGE: TOTAL; UNIT: PC",
-                   "UNIT: PC;  INDIC_IL: LI_R_MD60; AGE: TOTAL", "age: TOTAL; sex: TOTAL; UNIT: PC",
-                   NA, "unit: % of Owners", "unit: % of tennants", "sex: total",
-                   "sex: TOTAL", "sex: total", "sex: TOTAL", "sex: TOTAL", "sex: TOTAL",
-                   "duration: from 0 to 11", "duration: from 11 to 23", "duration: from 24 to 59",
-                   "duration: 60 or over", "sex: total", NA, "sex: total", NA, "cofog99: social protection",
-                   "cofog99: health", "cofog99: education", "sex: total", NA, "sex total",
-                   "sex healty life years in absolute value - males", "sex healty life years in absolute value - females",
-                   NA, "types: all individual"),
-               Tags = c(edat_lfse_14 = "edat_lfse_14",
-                    trng_lfse_01 = "trng_lfse_01", `Eurostat: edat_lfse_03` = "edat_lfse_03",
-                    `Eurostat: TESEM060` = "TESEM060", `Eurostat: TEPSR_LM210` = "TEPSR_LM210",
-                    `Eurostat: earn_gr_gpgr2` = "earn_gr_gpgr2", `Eurostat: ilc_di11` = "ilc_di11",
-                    `Eurostat: ilc_peps01` = "ilc_peps01", `Eurostat: ilc_li02` = "ilc_li02",
-                    `Eurostat: ilc_mddd11` = "ilc_mddd11", `Eurostat: TEPSR_LM430` = "TEPSR_LM430",
-                    `Eurostat: TEPSR_LM440` = "TEPSR_LM440", `Eurostat: TEPSR_LM440` = "TEPSR_LM440",
-                    `Eurostat: TESEM150` = "TESEM150", `Eurostat: TESEM010` = "TESEM010",
-                    `Eurostat: TESEM120` = "TESEM120", `Eurostat: TEPSR_WC130` = "TEPSR_WC130",
-                    `Eurostat: TESEM140` = "TESEM140", `Eurostat: TESEM130` = "TESEM130",
-                    `Eurostat: TEPSR_WC220` = "TEPSR_WC220", `Eurostat: TEPSR_WC220` = "TEPSR_WC220",
-                    `Eurostat: TEPSR_WC220` = "TEPSR_WC220", `Eurostat: TEPSR_WC220` = "TEPSR_WC220",
-                    `Eurostat: TEPSR_WC230` = "TEPSR_WC230", `Eurostat: TEPSR_WC310` = "TEPSR_WC310",
-                    `Eurostat: TESOV110` = "TESOV110", `Eurostat: TESPM050` = "TESPM050",
-                    `Eurostat: TEPSR_SP110` = "TEPSR_SP110", `Eurostat: TEPSR_SP110` = "TEPSR_SP110",
-                    `Eurostat: TEPSR_SP110` = "TEPSR_SP110", `Eurostat: TESPN070` = "TESPN070",
-                    `Eurostat: TEPSR_SP210` = "TEPSR_SP210", `Eurostat: TESPM110` = "TESPM110",
-                    tepsr_sp320 = "tepsr_sp320", tepsr_sp320 = "tepsr_sp320", `Eurostat: TEPSR_SP310` = "TEPSR_SP310",
-                    `Eurostat: TEPSR_SP410` = "TEPSR_SP410"),
-               Names = c(edat_lfse_14 = "edat_lfse_14",
-                        trng_lfse_01 = "trng_lfse_01", `Eurostat: edat_lfse_03` = "edat_lfse_03",
-                      `Eurostat: TESEM060` = "tesem060", `Eurostat: TEPSR_LM210` = "tepsr_lm210",
-                      `Eurostat: earn_gr_gpgr2` = "earn_gr_gpgr2", `Eurostat: ilc_di11` = "ilc_di11",
-                      `Eurostat: ilc_peps01` = "ilc_peps01", `Eurostat: ilc_li02` = "ilc_li02",
-                      `Eurostat: ilc_mddd11` = "ilc_mddd11", `Eurostat: TEPSR_LM430` = "tepsr_lm430",
-                      `Eurostat: TEPSR_LM440` = "tepsr_lm440", `Eurostat: TEPSR_LM440` = "tepsr_lm440",
-                      `Eurostat: TESEM150` = "tesem150", `Eurostat: TESEM010` = "tesem010",
-                      `Eurostat: TESEM120` = "tesem120", `Eurostat: TEPSR_WC130` = "tepsr_wc130",
-                      `Eurostat: TESEM140` = "tesem140", `Eurostat: TESEM130` = "tesem130",
-                      `Eurostat: TEPSR_WC220` = "tepsr_wc220", `Eurostat: TEPSR_WC220` = "tepsr_wc220",
-                      `Eurostat: TEPSR_WC220` = "tepsr_wc220", `Eurostat: TEPSR_WC220` = "tepsr_wc220",
-                      `Eurostat: TEPSR_WC230` = "tepsr_wc230", `Eurostat: TEPSR_WC310` = "tepsr_wc310",
-                      `Eurostat: TESOV110` = "tesov110", `Eurostat: TESPM050` = "tespm050",
-                      `Eurostat: TEPSR_SP110` = "tepsr_sp110", `Eurostat: TEPSR_SP110` = "tepsr_sp110",
-                      `Eurostat: TEPSR_SP110` = "tepsr_sp110", `Eurostat: TESPN070` = "tespn070",
-                      `Eurostat: TEPSR_SP210` = "tepsr_sp210", `Eurostat: TESPM110` = "tespm110",
-                        tepsr_sp320 = "tepsr_sp320", tepsr_sp320 = "tepsr_sp320",
-                      `Eurostat: TEPSR_SP310` = "tepsr_sp310",
-                      `Eurostat: TEPSR_SP410` = "tepsr_sp410"),
-Specifiche = list(c("age: 18-24",
-           " activyty: population"), "age 25-64", c("age: 30-34", " ISCED: 5-8"
-          ), c("age: 20-64", " indic_EM: EMP_LFS"), "age:20-64", "NACE_R2: B-S_X_O",
-        "age: TOTAL", c("AGE: TOTAL", " UNIT: PC"), c("UNIT: PC",
-        "  INDIC_IL: LI_R_MD60", " AGE: TOTAL"), c("age: TOTAL",
-        " sex: TOTAL", " UNIT: PC"), NA_character_, "unit: % of Owners",
-        "unit: % of tennants", "sex: total", "sex: TOTAL", "sex: total",
-        "sex: TOTAL", "sex: TOTAL", "sex: TOTAL", "duration: from 0 to 11",
-        "duration: from 11 to 23", "duration: from 24 to 59", "duration: 60 or over",
-        "sex: total", NA_character_, "sex: total", NA_character_,
-        "cofog99: social protection", "cofog99: health", "cofog99: education",
-        "sex: total", NA_character_, "sex total",
-        "sex healty life years in absolute value - males",
-        "sex healty life years in absolute value - females", NA_character_,
-        "types: all individual")), class = c("tbl_df", "tbl", "data.frame"
-        ), row.names = c(NA, -37L))
+  scoreBoaTB <- structure(list(Sele = c(9, 9, 9,   #1
+                                        9, 9, 9,   #2
+                                        9, 9, 9,   #3
+                                        9, 9, 9,   
+                                        9, 9, 9,  #5
+                                        9, 9, 9, 
+                                        9, 9, 9,
+                                        9, 9, 9, 
+                                        9, 9, 9, 
+                                        9, 9, 9,  #10
+                                        9, 9, 9, 
+                                        9, 9, 9,
+                                        9, 9, 9), #13 --39
+                        # IndicatorID = c("I.01.01.00", "I.01.02.00", "I.01.04.00",
+                        #                           "I.02.01.00", "I.02.02.00", "I.02.03.00", "I.03.01.00", "I.04.01.00",
+                        #                           "I.04.02.00", "I.04.03.00", "I.04.04.00", "I.04.05.00", "I.04.06.00",
+                        #                           "I.05.01.00", "II.06.01.00", "II.06.02.00", "II.06.03.00", "II.06.04.00",
+                        #                           "II.07.01.00", "II.07.03.00", "II.07.04.00", "II.07.05.00", "II.07.06.00",
+                        #                           "II.07.07.00", "II.08.01.00", "II.08.04.00", "III.09.01.00",
+                        #                           "III.09.02.00", "III.09.03.00", "III.09.04.00", "III.09.05.00",
+                        #                           "III.10.01.00", "III.11.01.00", "III.11.02.00", "III.11.03.00",
+                        #                           "III.11.04.00", "III.12.01.00"),
+               Source = c("Eurostat: sdg_04_10", "Eurostat: tepsr_sp410",	
+                          "Eurostat: tepsr_lm410", 
+                          "Eurostat: tessi010",
+                          "Eurostat: tepsr_lm430",
+                          "Eurostat: tepsr_lm412",
+                          "Eurostat: sdg_08_20", 
+                          "Eurostat: tesem060",	"Eurostat: sdg_04_60", "Eurostat: tesem030", "Eurostat: tepsr_lm210",	
+                          "Eurostat: sdg_05_20", "Eurostat: sdg_08_30",	"Eurostat: tesem120",	"Eurostat: tesem130",	
+                          "Eurostat: tepsr_wc310", "Eurostat: tepsr_wc130", "Eurostat: tesem140",	"Eurostat: tepsr_wc220",
+                          "Eurostat: tepsr_wc230",	"Eurostat: tesov110",	"Eurostat: tespm010",	"Eurostat: tepsr_spi110",	
+                          "Eurostat: tepsr_lm420",	"Eurostat: tepsr_spi130",	"Eurostat: tespm050",	"Eurostat: tepsr_sp200",	
+                          "Eurostat: ilc_lvho07a",	"Eurostat: tepsr_sp210",	"Eurostat: tespm110",	"Eurostat: tepsr_lm440",	
+                          "Eurostat: tepsr_lm440",	"Eurostat: tepsr_sp110",	"Eurostat: tepsr_sp110",	"Eurostat: tepsr_sp110",	
+                          "Eurostat: ILC_PNP3",	"Eurostat: tepsr_sp310",	"Eurostat: tepsr_sp320",	"Eurostat: tepsr_sp320"),
+               Preset = c("sex: total", "sex: total", 
+                          "sex: total; age: total",
+                          "sex: total; age: total",
+                          "sex: total; age: Y_LT65",
+                          "sex: total; age: Y_LT18",
+                          "sex: females", 
+                          "sex: females; age: 20-64", NA, 
+                          "sex: total; age: 30-34", NA, NA, "sex: total; age: 20-64", "sex: total; age: 15-74", 
+                          "sex: total; age: 15-74", NA, "sex: total; age: 15-64", "sex: total; age: 15-24", 
+                          "sex: total; age: 20-64 ; duration: from 0 to 11", "sex: total; duration: 3-year average", 
+                          "sex: total; duration: 18 or over", "sex: total", "sex: total", "sex: females", "sex: total", 
+                          NA, "sex: total; lev_limit: SM_SEV", NA, NA, NA, "tenure: OWN_L", "tenure: RENT_MKT", 
+                          "cofog99: GF07", "cofog99: GF09", "cofog99: GF10", "sex: total", NA, "sex: females", 
+                          "sex: males"),
+               Tags = c(`Eurostat: sdg_04_10` = "sdg_04_10", `Eurostat: tepsr_sp410` = "tepsr_sp410",
+                        `Eurostat: tepsr_lm410` ="tepsr_lm410",
+                        `Eurostat: tessi010` = "tessi010",
+                        `Eurostat:tepsr_lm430` =  "tepsr_lm430",
+                        `Eurostat:tepsr_lm412` =  "tepsr_lm412",
+                        `Eurostat: sdg_08_20` = "sdg_08_20", `Eurostat: tesem060` = "tesem060", 
+                        `Eurostat: sdg_04_60` = "sdg_04_60", `Eurostat: tesem030` = "tesem030", 
+                        `Eurostat: tepsr_lm210` = "tepsr_lm210", `Eurostat: sdg_05_20` = "sdg_05_20", 
+                        `Eurostat: sdg_08_30` = "sdg_08_30", `Eurostat: tesem120` = "tesem120", 
+                        `Eurostat: tesem130` = "tesem130", `Eurostat: tepsr_wc310` = "tepsr_wc310", 
+                        `Eurostat: tepsr_wc130` = "tepsr_wc130", `Eurostat: tesem140` = "tesem140", 
+                        `Eurostat: tepsr_wc220` = "tepsr_wc220", `Eurostat: tepsr_wc230` = "tepsr_wc230", 
+                        `Eurostat: tesov110` = "tesov110", `Eurostat: tespm010` = "tespm010", 
+                        `Eurostat: tepsr_spi110` = "tepsr_spi110", `Eurostat: tepsr_lm420` = "tepsr_lm420", 
+                        `Eurostat: tepsr_spi130` = "tepsr_spi130", `Eurostat: tespm050` = "tespm050", 
+                        `Eurostat: tepsr_sp200` = "tepsr_sp200", `Eurostat: ilc_lvho07a` = "ilc_lvho07a", 
+                        `Eurostat: tepsr_sp210` = "tepsr_sp210", `Eurostat: tespm110` = "tespm110", 
+                        `Eurostat: tepsr_lm440` = "tepsr_lm440", `Eurostat: tepsr_lm440` = "tepsr_lm440", 
+                        `Eurostat: tepsr_sp110` = "tepsr_sp110", `Eurostat: tepsr_sp110` = "tepsr_sp110", 
+                        `Eurostat: tepsr_sp110` = "tepsr_sp110", `Eurostat: ILC_PNP3` = "ILC_PNP3", 
+                        `Eurostat: tepsr_sp310` = "tepsr_sp310", `Eurostat: tepsr_sp320` = "tepsr_sp320", 
+                        `Eurostat: tepsr_sp320` = "tepsr_sp320"),
+               Names = c(`Eurostat: sdg_04_10` = "sdg_04_10", `Eurostat: tepsr_sp410` = "tepsr_sp410",
+                         `Eurostat: tepsr_lm410` ="tepsr_lm410",
+                         `Eurostat: tessi010` = "tessi010",
+                         `Eurostat:tepsr_lm430` =  "tepsr_lm430",
+                         `Eurostat:tepsr_lm412` =  "tepsr_lm412",
+                         `Eurostat: sdg_08_20` = "sdg_08_20", `Eurostat: tesem060` = "tesem060", 
+                         `Eurostat: sdg_04_60` = "sdg_04_60", `Eurostat: tesem030` = "tesem030", 
+                         `Eurostat: tepsr_lm210` = "tepsr_lm210", `Eurostat: sdg_05_20` = "sdg_05_20", 
+                         `Eurostat: sdg_08_30` = "sdg_08_30", `Eurostat: tesem120` = "tesem120", 
+                         `Eurostat: tesem130` = "tesem130", `Eurostat: tepsr_wc310` = "tepsr_wc310", 
+                         `Eurostat: tepsr_wc130` = "tepsr_wc130", `Eurostat: tesem140` = "tesem140", 
+                         `Eurostat: tepsr_wc220` = "tepsr_wc220", `Eurostat: tepsr_wc230` = "tepsr_wc230", 
+                         `Eurostat: tesov110` = "tesov110", `Eurostat: tespm010` = "tespm010", 
+                         `Eurostat: tepsr_spi110` = "tepsr_spi110", `Eurostat: tepsr_lm420` = "tepsr_lm420", 
+                         `Eurostat: tepsr_spi130` = "tepsr_spi130", `Eurostat: tespm050` = "tespm050", 
+                         `Eurostat: tepsr_sp200` = "tepsr_sp200", `Eurostat: ilc_lvho07a` = "ilc_lvho07a", 
+                         `Eurostat: tepsr_sp210` = "tepsr_sp210", `Eurostat: tespm110` = "tespm110", 
+                         `Eurostat: tepsr_lm440` = "tepsr_lm440", `Eurostat: tepsr_lm440` = "tepsr_lm440", 
+                         `Eurostat: tepsr_sp110` = "tepsr_sp110", `Eurostat: tepsr_sp110` = "tepsr_sp110", 
+                         `Eurostat: tepsr_sp110` = "tepsr_sp110", `Eurostat: ILC_PNP3` = "ILC_PNP3", 
+                         `Eurostat: tepsr_sp310` = "tepsr_sp310", `Eurostat: tepsr_sp320` = "tepsr_sp320", 
+                         `Eurostat: tepsr_sp320` = "tepsr_sp320"),
+Specifiche = list("sex: total", "sex: total", 
+                  c("sex: total","age:total"),
+                  c("sex: total","age:total"),
+                  c("sex: total","Y_LT65"),
+                  c("sex: total","Y_LT18"),
+                  "sex: females", 
+                  c("sex: females", "age: 20-64"), NA, 
+                  c("sex: total","age: 30-34"), NA, NA, c("sex: total", "age: 20-64"), c("sex: total","age: 15-74"), 
+                  c("sex: total", "age: 15-74"), NA, c("sex: total","age: 15-64"), c("sex: total","age: 15-24"), 
+                  c("sex: total", "age: 20-64", "duration: from 0 to 11"), c("sex: total", "duration: 3-year average"), 
+                  c("sex: total", "duration: 18 or over"), "sex: total", "sex: total", "sex: females", "sex: total", 
+                  NA, c("sex: total","lev_limit: SM_SEV"), NA, NA, NA, "tenure: OWN_L", "tenure: RENT_MKT", 
+                  "cofog99: GF07", "cofog99: GF09", "cofog99: GF10", "sex: total", NA, "sex: females", 
+                  "sex: males")), class = c("tbl_df", "tbl", "data.frame"
+                  ), row.names = c(NA, -39L))
 
   return(
     list(
       EUcodes=EUcodes,
-      Eurozone = Eurozone,
-      EA = Eurozone,
+      EA = Euroarea,
+      EA19=Euroarea,
       EU12=EU12,
       EU15=EU15,
-      EU19=EU19,
       EU25=EU25,
       EU27_2007= EU27_2007,# pre brexit
       EU27_2019= EU27_2019, # pre Brexit

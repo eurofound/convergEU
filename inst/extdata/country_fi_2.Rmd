@@ -40,6 +40,13 @@ library(ggplot2)
 library(kableExtra)
 library(caTools)
 library(broom)
+library(png)
+library(htmltools)
+library(htmlwidgets)
+library(webshot)
+library(flextable)
+library(flexmix)
+library(officer)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -277,6 +284,8 @@ The graph gives an overview of the country performance compared to `r params$agg
 
 
 <br><br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
 
 ```{r}
 
@@ -316,62 +325,63 @@ ttmp <- dplyr::mutate(ttmp,eticheMax = ttmpeticheMax)
 ```
 
 
-```{r}
+```{r fig.width=6,fig.height=5}
 #1# revision with standard names  
+#revised on 20/02 to adjust rlang requirements, can't use .data anymore if data after + -EPE
 myG2 <-  ggplot(ttmp) +  
-         geom_line(aes(x= .data[[timeName]], y = .data[["mean"]],colour="black" )) +
-          geom_point(aes(x=.data[[timeName]],y = .data[["mean"]],colour="black")) + 
-          # add countries
-          #6 aprile geom_line( aes( x = ttmp[,timeName], y = ttmp[[seleCountry]], 
-          geom_line( aes( x = .data[[timeName]], y = .data[[seleCountry]], 
-                          colour="red"),linetype="dotted") + 
-          # 6 aprile geom_point( aes(x = ttmp[,timeName], y = ttmp[,seleCountry], colour="red")) +
-          geom_point( aes(x = .data[[timeName]], y = .data[[seleCountry]], 
-                          colour="red")) +
-          # 6 aprileggplot2::scale_x_continuous(breaks = ttmp[,timeName],labels = ttmp[,timeName]) +
-          ggplot2::scale_x_continuous(breaks = .data[[timeName]],
-                                      labels = .data[[timeName]]) +
-          ylim(c(miniY,maxiY)) + 
-          xlab("Year") + 
-          ylab("Indicator level") +
-        ggplot2::geom_line(aes(x= .data[[timeName]],
-                               y= .data[["serieMin"]],
-                               colour = "blue" 
-                               ),linetype="dashed") +
-        ggplot2::geom_line(aes(x= .data[[timeName]],
-                               y= .data[["serieMax"]],
-                               colour = "blue" 
-                               ),linetype="dashed") +
-        ggplot2::annotate("text",
-                        x = .data[["time"]], 
-                        y = .data[["serieMax"]], 
-                        label = paste(.data[[eticheMax]],"    "),
-                        color ="navyblue",
-                        angle=45) +
-        ggplot2::annotate("text", 
-                        x = .data[["time"]], 
-                        y= .data[["serieMin"]], 
-                        label = paste("    ",ttmp$eticheMin),
-                        color ="navyblue",
-                        angle=45)  +
-       ggplot2::theme(
-                 axis.text.x=ggplot2::element_text(
-                 angle = myx_angle 
-                 )) +
-      scale_colour_manual("Series",
+  geom_line(aes(x= .data[["time"]], y = .data[["mean"]],colour="black" )) +
+  geom_point(aes(x=.data[["time"]],y = .data[["mean"]],colour="black")) + 
+  # add countries
+  #6 aprile geom_line( aes( x = ttmp[,"time"], y = ttmp[[seleCountry]], 
+  geom_line( aes( x = .data[["time"]], y = .data[[seleCountry]], 
+                  colour="red"),linetype="dotted") + 
+  # 6 aprile geom_point( aes(x = ttmp[,"time"], y = ttmp[,seleCountry], colour="red")) +
+  geom_point( aes(x = .data[["time"]], y = .data[[seleCountry]], 
+                  colour="red")) +
+  # 6 aprileggplot2::scale_x_continuous(breaks = ttmp[,"time"],labels = ttmp[,"time"]) +
+  ggplot2::scale_x_continuous(breaks = ttmp[["time"]],
+                              labels = ttmp[["time"]]) +
+  ylim(c(miniY,maxiY)) + 
+  xlab("Year") + 
+  ylab("Indicator level") +
+  ggplot2::geom_line(aes(x= .data[["time"]],
+                         y= .data[["serieMin"]],
+                         colour = "blue" 
+  ),linetype="dashed") +
+  ggplot2::geom_line(aes(x= .data[["time"]],
+                         y= .data[["serieMax"]],
+                         colour = "blue" 
+  ),linetype="dashed") +
+  ggplot2::annotate("text",
+                    x = ttmp[["time"]], 
+                    y = ttmp[["serieMax"]], 
+                    label = paste(ttmp[["eticheMax"]],"    "),
+                    color ="navyblue",
+                    angle=45) +
+  ggplot2::annotate("text", 
+                    x = ttmp[["time"]], 
+                    y= ttmp[["serieMin"]], 
+                    label = paste("    ",ttmp$eticheMin),
+                    color ="navyblue",
+                    angle=45)  +
+  ggplot2::theme(
+    axis.text.x=ggplot2::element_text(
+      angle = 45 
+    )) +
+  scale_colour_manual("Series",
                       values=c("blue"="blue",
                                "red" = "red",
                                "black" = "black")
                       ,labels=c("blue" = "min/max",
                                 "red" = seleCountry,
-                                 "black"="mean")
-                      ) + theme(legend.key.size = unit(1.3, "cm")) +
-      guides(shape = FALSE, colour = guide_legend(
-           override.aes = list(linetype =  c(
-                                        "black"="F1",
-                                        "blue"="45",
-                                        "red"="13")
-           ))) 
+                                "black"="mean")
+  ) + theme(legend.key.size = unit(1.3, "cm")) +
+  guides(shape = "none", colour = guide_legend(
+    override.aes = list(linetype =  c(
+      "black"="F1",
+      "blue"="45",
+      "red"="13")
+    )))
   
   
   
@@ -434,8 +444,9 @@ The graph shows the times series trend of the selected Member States giving an
 idea of the individual development of the countries selected. 
 
 <br>
-
-```{r,echo=FALSE,eval=T}
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo=FALSE,eval=T, fig.width=6,fig.height=5}
 #  other countries forced to be present without missing values
 
     tmp2 <-  ttmp[, c(timeName,seleCountry,otherCountries)]
@@ -582,8 +593,10 @@ for(aux in curCountries){
 }
 final_TB <- tidyr::gather(scobelvl, key="Country",value="Level",all_of(curCountries))
 ```
-
-```{r,fig.height=altezzaG2}
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,fig.height=altezzaG2,fig.width=6}
 if(length(curCountries)>1){
 
 myG_JAF <- ggplot(final_TB,
@@ -667,7 +680,7 @@ out_packed_list$JAF <- myG_JAF
 This table is useful in order to assess if the Member State's performance deviates significantly from the `r params$aggregation` average.
 
 
-```{r demeaGraphSet0,echo=FALSE,eval=T}
+```{r demeaGraphSet0,echo=FALSE,eval=T,fig.width=6,fig.height=5}
 curCountries <- params$country
 if(!is.na(otherCountries[1])){
   curCountries <- c(curCountries, otherCountries)
@@ -675,9 +688,11 @@ if(!is.na(otherCountries[1])){
 altezzaG0 <- 3 + 6 * (length(curCountries)/30)
 #height was 6
 ```
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
 
-
-```{r,fig.height=altezzaG0}
+```{r,fig.height=altezzaG0,fig.width=6}
 ## NOTE !!!!
 ## only calculations on subsequent years are supported.
 ## Time intervals of different lengths not supported
@@ -786,147 +801,42 @@ head{
 
  
  
-
-```{r, echo=FALSE}
-
-testa_1 <- function(colonne_tot){
-paste(  
-"<table class=\"table table-striped table-condensed table-bordered\" style=\"font-size: 12px; width: auto !important; margin-center: auto; margin-right: auto;\"><thead>
-<tr>
-<th style=\"border-bottom:hidden\" colspan=\"1\"></th><th style=\"border-bottom:hidden; padding-bottom:0; padding-center:3px;padding-right:3px;text-align: center; color: #2676ba;\" colspan=\"",
-colonne_tot-4,
-"\"><div style=\"border-bottom: 1px solid #ddd; padding-bottom: 5px; \"><span style=\"-webkit-transform: rotate(0deg); -moz-transform: rotate(0deg); -ms-transform: rotate(0deg); -o-transform: rotate(0deg); transform: rotate(0deg); display: inline-block;\">Yearly changes</span></div></th>
-<th style=\"border-bottom:hidden; padding-bottom:0; padding-center:3px;padding-right:3px;text-align: center; color: #2676ba;\" colspan=\"3\"><div style=\"border-bottom: 1px solid #ddd; padding-bottom: 5px; \"><span style=\"-webkit-transform: rotate(0deg); -moz-transform: rotate(0deg); -ms-transform: rotate(0deg); -o-transform: rotate(0deg); transform: rotate(0deg); display: inline-block;\">Instances of convergence and divergence</span></div>
-</th>
-<th style=\"border-bottom:hidden\" colspan=\"1\"></th>
-</tr>",  sep="")
-  
-}
-
-
-testa_2bis <- function(etichetteH, etich_col_1r="First/Last"){
-
-res <- "<tr><th style=\"text-align:left;\"> <div   style=\"color:#2676ba;\">Country</div> </th>";
-for(aux in etichetteH){
-  res <- paste(res,"<th style=\"text-align:center;\"><div class=\"vertical-text\">",
-             "<div class=\"vertical-text__inner\" style=\"color:#2676ba;\">",
-               aux,"</div></div> </th>", sep="",collapse="\n");
-}  
-res <- paste(res,  "<th style=\"text-align:center;\"> <div style=\"color:#2676ba;\">")  
-# changed code
-# res <- paste(res, "Catching up<br>(1) </div> </th> <th style=\"text-align:center;\"> ")
-# res <- paste(res,"<div style=\"color:#2676ba;\"> Falling away <br>(9) </div> </th>")
-# res <- paste(res, "<th style=\"text-align:center;\">  <div style=\"color:#2676ba;\">Diving  <br>(6)</div> </th>")
-# new titles October 2020: number sign &#35; introduced
-res <- paste(res, " &#35;(1) </div> </th> <th style=\"text-align:center;\"> ")
-res <- paste(res,"<div style=\"color:#2676ba;\"> &#35;(9) </div> </th>")
-res <- paste(res, "<th style=\"text-align:center;\">  <div style=\"color:#2676ba;\">&#35;(6)</div> </th>")
-# end of changes
-
-res <- paste(res,"<th style=\"text-align:center;\"><div class=\"vertical-text\">",
-             "<div class=\"vertical-text__inner\" style=\"color:#2676ba;\">",
-               etich_col_1r,"</div></div> </th>", 
-         "</tr></thead>",sep=" ",collapse=" ") 
-res  
-}
- 
-corpo_1 <-  function(record){ # tutta la riga anche con colonna extra
-  dime <- length(record)-1
-  # filtro record for colouring the background
-  templato <- list()
-  # now patterns are 40
-  templato[1:40] <- "<td style=\"text-align:center;\">";
-  
-  # end of changes
-  templato[[1]] <- "<td style=\"text-align:center;background-color:#dbe7c2;\">";
-  templato[[6]] <- "<td style=\"text-align:center;background-color:#f9b9b9;\">";
-  templato[[9]] <- "<td style=\"text-align:center;background-color:#ee3557;\">";
-  elem_good <- as.numeric(record[-1*c(1,dime-2,dime-1,dime,dime+1)])
-  res <- paste(
-  "<tr>",
-   "<td style=\"text-align:left;\">", record[1],"</td>",
-    paste(templato[elem_good],
-        elem_good,"</td>",sep="",collapse=""),
-   "<td style=\"text-align:center;\">",
-         "<span  >",record[dime-2],"</span></td>",
-  "<td style=\"text-align:center;\">",
-            "<span  >",record[dime-1],"</span></td>",
-  "<td style=\"text-align:center;\">", 
-             "<span  >",record[dime],"</span></td>",
-  paste(templato[[ as.numeric(record[dime+1]) ]], " ",
-                "<span >",
-               record[dime+1],
-               "</span>",
-              "</td>"),
-  "</tr>",sep="")
-  
-  res
-}
-
-corpo_full <-  function(myTB){
-  
-  dimeR <- nrow(myTB)
-  res<-"<tbody>"
-  for(aux in 1:dimeR){
-    recordcorre <-  corpo_1( unlist(myTB[aux,]))
-    res <- paste(res,recordcorre,
-                 sep="")
-  } 
-  paste(res,
-        "</tbody>","</table>",sep="")
-}
-
-tabe_tot <- function(mydata, first_last_years="First/Last"){
-  totcol <- ncol(mydata)-1
-  intesta <- names(mydata)[-c(1,totcol-2,totcol-1,totcol,totcol+1)]
-  res <-  testa_1(totcol)
-  res <- paste(res, testa_2bis(etichetteH = intesta, 
-                               etich_col_1r = first_last_years ),
-               sep="")
-  res <- paste(res, corpo_full(mydata),sep="")
-  res
-}
-
- 
-```
-
- 
- 
- 
-```{r compilePatterns,results='asis',eval=T}
+<img src="eurofound.jpg" width=50px height=40px>
+<br> 
+```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6}
 estrattore <- as.logical((wkDF[,timeName] >= ptime_0) &  (wkDF[,timeName]<= ptime_t))
-estrattore_1_n <- as.logical((wkDF[,timeName] == ptime_0) |   
-                               (wkDF[,timeName]== ptime_t))
+estrattore_1_n <- as.logical((wkDF[,timeName] == ptime_0) |  (wkDF[,timeName]== ptime_t))
 
-## original patterns
+# original code pre 39 patterns
 # myMSPat <- ms_pattern_ori(wkDF[estrattore,],
 #                           timeName = timeName,
 #                           typeIn= params$indiType)
 # myMSPat_first_last <- ms_pattern_ori(wkDF[estrattore_1_n ,],
 #                           timeName = timeName,
 #                           typeIn= params$indiType)
-# ### end of original patterns
+# end original code
 ### new 39+1 patterns
-myMSPat <- ms_pattern_39(wkDF[estrattore,],
+myMSPat <- ms_pattern_59(wkDF[estrattore,],
                           timeName = timeName)
-myMSPat_first_last <- ms_pattern_39(wkDF[estrattore_1_n ,],
+myMSPat_first_last <- ms_pattern_59(wkDF[estrattore_1_n ,],
                           timeName = timeName)
 ## end of 39+1 new patterns
+
+
+
+
 
 workMatSco <- myMSPat$res$mat_num_tags
 workMatSco2 <- dplyr::bind_cols(myMSPat$res$mat_num_tags,
                             myMSPat_first_last$res$mat_num_tags[,2] )
 # test
 if(any(myMSPat$res$mat_num_tags[,1] != myMSPat_first_last$res$mat_num_tags[,1])){
-  stop("Error:  countries do not match.")
+  stop("Error: line 1020 indica_fi.Rmd - countries do not match.")
 }
-```
 
 
-```{r,results='asis',eval=T}
-##
 curCountries <- setdiff(names(wkDF),timeName)
-posiMS  <- posiMS2 <- vector()
+posiMS <- posiMS2 <- vector()
 for(auxCC in curCountries){
     posiMS <-  c(posiMS,which(workMatSco$Country == auxCC))
     posiMS2 <-  c(posiMS2,which(workMatSco2$Country == auxCC))
@@ -935,12 +845,16 @@ for(auxCC in curCountries){
 workMatSco <- workMatSco[posiMS,]
 workMatSco2 <- workMatSco2[posiMS2,]
   
+
 if(params$aggregation != "custom"){
   map2str <- convergEU_glb()[[params$aggregation]]$memberStates
 }else{ # it's custom 3 october 2019
   map2str <- dplyr::tibble(MS = curCountries,
                            codeMS = curCountries)
 }
+
+
+
 ## below is fine
 for(aux in 1:nrow(workMatSco)){ 
     puntaMS <- which(map2str$codeMS ==   workMatSco$Country[aux ])
@@ -949,142 +863,939 @@ for(aux in 1:nrow(workMatSco)){
     workMatSco2$Country[aux ] <- map2str$MS[puntaMS]
     
 }
+
 mappaLongStri <- sapply(seleCount,function(vx){which(vx == nomiSele)})
 seleEstresi <- nomiSeleExt[mappaLongStri]
-workMatSco3 <- dplyr::filter(workMatSco2, Country %in% seleEstresi)
+workMatSco2 <- dplyr::filter(workMatSco2, Country %in% seleEstresi)
+
+## indicate 59 patterns
+color_ind1 <- which(workMatSco2 == 1, arr.ind = TRUE)
+color_ind2 <- which(workMatSco2 == 2, arr.ind = TRUE)
+color_ind3 <- which(workMatSco2 == 3, arr.ind = TRUE)
+color_ind4 <- which(workMatSco2 == 4, arr.ind = TRUE)
+color_ind5 <- which(workMatSco2 == 5, arr.ind = TRUE)
+color_ind6 <- which(workMatSco2 == 6, arr.ind = TRUE)
+color_ind7 <- which(workMatSco2 == 7, arr.ind = TRUE)
+color_ind8 <- which(workMatSco2 == 8, arr.ind = TRUE)
+color_ind9 <- which(workMatSco2 == 9, arr.ind = TRUE)
+color_ind10 <- which(workMatSco2 == 10, arr.ind = TRUE)
+color_ind11 <- which(workMatSco2 == 11, arr.ind = TRUE)
+color_ind12 <- which(workMatSco2 == 12, arr.ind = TRUE)
+color_ind13 <- which(workMatSco2 == 13, arr.ind = TRUE)
+color_ind14 <- which(workMatSco2 == 14, arr.ind = TRUE)
+color_ind15 <- which(workMatSco2 == 15, arr.ind = TRUE)
+color_ind16 <- which(workMatSco2 == 16, arr.ind = TRUE)
+color_ind17 <- which(workMatSco2 == 17, arr.ind = TRUE)
+color_ind18 <- which(workMatSco2 == 18, arr.ind = TRUE)
+color_ind19 <- which(workMatSco2 == 19, arr.ind = TRUE)
+color_ind20 <- which(workMatSco2 == 20, arr.ind = TRUE)
+color_ind21 <- which(workMatSco2 == 21, arr.ind = TRUE)
+color_ind22 <- which(workMatSco2 == 22, arr.ind = TRUE)
+color_ind23 <- which(workMatSco2 == 23, arr.ind = TRUE)
+color_ind24 <- which(workMatSco2 == 24, arr.ind = TRUE)
+color_ind25 <- which(workMatSco2 == 25, arr.ind = TRUE)
+color_ind26 <- which(workMatSco2 == 26, arr.ind = TRUE)
+color_ind27 <- which(workMatSco2 == 27, arr.ind = TRUE)
+color_ind28 <- which(workMatSco2 == 28, arr.ind = TRUE)
+color_ind29 <- which(workMatSco2 == 29, arr.ind = TRUE)
+color_ind30 <- which(workMatSco2 == 30, arr.ind = TRUE)
+color_ind31 <- which(workMatSco2 == 31, arr.ind = TRUE)
+color_ind32 <- which(workMatSco2 == 32, arr.ind = TRUE)
+color_ind33 <- which(workMatSco2 == 33, arr.ind = TRUE)
+color_ind34 <- which(workMatSco2 == 34, arr.ind = TRUE)
+color_ind35 <- which(workMatSco2 == 35, arr.ind = TRUE)
+color_ind36 <- which(workMatSco2 == 36, arr.ind = TRUE)
+color_ind37 <- which(workMatSco2 == 37, arr.ind = TRUE)
+color_ind38 <- which(workMatSco2 == 38, arr.ind = TRUE)
+color_ind39 <- which(workMatSco2 == 39, arr.ind = TRUE)
+color_ind40 <- which(workMatSco2 == 40, arr.ind = TRUE)
+color_ind41 <- which(workMatSco2 == 41, arr.ind = TRUE)
+color_ind42 <- which(workMatSco2 == 42, arr.ind = TRUE)
+color_ind43 <- which(workMatSco2 == 43, arr.ind = TRUE)
+color_ind44 <- which(workMatSco2 == 44, arr.ind = TRUE)
+color_ind45 <- which(workMatSco2 == 45, arr.ind = TRUE)
+color_ind46 <- which(workMatSco2 == 46, arr.ind = TRUE)
+color_ind47 <- which(workMatSco2 == 47, arr.ind = TRUE)
+color_ind48 <- which(workMatSco2 == 48, arr.ind = TRUE)
+color_ind49 <- which(workMatSco2 == 49, arr.ind = TRUE)
+color_ind50 <- which(workMatSco2 == 50, arr.ind = TRUE)
+color_ind51 <- which(workMatSco2 == 51, arr.ind = TRUE)
+color_ind52 <- which(workMatSco2 == 52, arr.ind = TRUE)
+color_ind53 <- which(workMatSco2 == 53, arr.ind = TRUE)
+color_ind54 <- which(workMatSco2 == 54, arr.ind = TRUE)
+color_ind55 <- which(workMatSco2 == 55, arr.ind = TRUE)
+color_ind56 <- which(workMatSco2 == 56, arr.ind = TRUE)
+color_ind57 <- which(workMatSco2 == 57, arr.ind = TRUE)
+color_ind58 <- which(workMatSco2 == 58, arr.ind = TRUE)
+color_ind59 <- which(workMatSco2 == 59, arr.ind = TRUE)
+color_ind60 <- which(workMatSco2 == 60, arr.ind = TRUE)
+
+bcolor_ind_high1 <- which(workMatSco2 == 1, arr.ind = TRUE)
+bcolor_ind_high2 <- which(workMatSco2 == 2, arr.ind = TRUE)
+bcolor_ind_high3 <- which(workMatSco2 == 3, arr.ind = TRUE)
+bcolor_ind_high4 <- which(workMatSco2 == 4, arr.ind = TRUE)
+bcolor_ind_high5 <- which(workMatSco2 == 39, arr.ind = TRUE)
+bcolor_ind_high6 <- which(workMatSco2 == 40, arr.ind = TRUE)
+bcolor_ind_high7 <- which(workMatSco2 == 37, arr.ind = TRUE)
+bcolor_ind_high8 <- which(workMatSco2 == 38, arr.ind = TRUE)
+
+bcolor_ind_low1 <- which(workMatSco2 == 17, arr.ind = TRUE)
+bcolor_ind_low2 <- which(workMatSco2 == 20, arr.ind = TRUE)
+bcolor_ind_low3 <- which(workMatSco2 == 18, arr.ind = TRUE)
+bcolor_ind_low4 <- which(workMatSco2 == 19, arr.ind = TRUE)
+bcolor_ind_low5 <- which(workMatSco2 == 21, arr.ind = TRUE)
+bcolor_ind_low6 <- which(workMatSco2 == 22, arr.ind = TRUE)
+bcolor_ind_low7 <- which(workMatSco2 == 23, arr.ind = TRUE)
+bcolor_ind_low8 <- which(workMatSco2 == 24, arr.ind = TRUE)
+
+#HERE STARTS the SECOND version of the flextable aka flx2
+flx2 <- autofit(flextable(workMatSco2))
+flx2 <- rotate(flx2,j = 2:(ncol(workMatSco2)-1), rotation="btlr",part="header")
+flx2 <- rotate(flx2,j = ncol(workMatSco2), rotation="btlr",part="header")
+flx2 <- add_header_row(flx2, values = c("", "Yearly Changes",""), colwidths = c(1,(ncol(workMatSco2)-2),1))
+flx2 <- bold(flx2,bold=TRUE, part="header")
+flx2 <- color(flx2,color="#2676ba", part = "header")
+flx2 <- hline(flx2, part="body",border = fp_border(color="gray"))
+flx2 <- vline(flx2, j=1,border = fp_border(color = "black", style = "solid", width = 2))
+flx2 <- vline(flx2, j=(ncol(workMatSco2)-1),border = fp_border(color = "black", style = "solid", width = 2))
+# flx2 <- vline(flx2, j="Diving",border = fp_border(color = "black", style = "solid", width = 2))
+### fix if more columns added
+flx2 <- valign(flx2, valign = "center", part = "header")
+flx2 <- align(flx2, align = "center", part = "header")
+flx2 <- valign(flx2, valign = "center", part = "body")
+flx2 <- align(flx2, align = "center", part = "body")
+flx2 <- align(flx2, j=1,align = "left", part = "all")
+
+#first make all cells white
+flx2<-bg(flx2, bg = 'white')
+
+if(params$indiType == "highBest"){
+  if(length(bcolor_ind_high1) != 0){
+  for(i in 1:nrow(bcolor_ind_high1)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high1[i, 1], j = bcolor_ind_high1[i, 2], bg = '#78b64e')
+  }}
+  if(length(bcolor_ind_high2) != 0){
+  for(i in 1:nrow(bcolor_ind_high2)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high2[i, 1], j = bcolor_ind_high2[i, 2], bg = '#78b64e')
+  }}
+  if(length(bcolor_ind_high3) != 0){
+  for(i in 1:nrow(bcolor_ind_high3)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high3[i, 1], j = bcolor_ind_high3[i, 2], bg = '#004600')
+  }}
+  if(length(bcolor_ind_high4) != 0){
+  for(i in 1:nrow(bcolor_ind_high4)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high4[i, 1], j = bcolor_ind_high4[i, 2], bg = '#004600')
+  }}
+  if(length(bcolor_ind_high5) != 0){
+  for(i in 1:nrow(bcolor_ind_high5)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high5[i, 1], j = bcolor_ind_high5[i, 2], bg = '#ff5b5b')
+  }}
+  if(length(bcolor_ind_high6) != 0){
+  for(i in 1:nrow(bcolor_ind_high6)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high6[i, 1], j = bcolor_ind_high6[i, 2], bg = '#ff5b5b')
+  }}
+  if(length(bcolor_ind_high7) != 0){
+  for(i in 1:nrow(bcolor_ind_high7)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high7[i, 1], j = bcolor_ind_high7[i, 2], bg = '#8e0000')
+  }}
+  if(length(bcolor_ind_high8) != 0){
+  for(i in 1:nrow(bcolor_ind_high8)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_high8[i, 1], j = bcolor_ind_high8[i, 2], bg = '#8e0000')
+     }}
+}else if(params$indiType == "lowBest"){
+  if(length(bcolor_ind_low1) != 0){
+  for(i in 1:nrow(bcolor_ind_low1)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low1[i, 1], j = bcolor_ind_low1[i, 2], bg = '#78b64e')
+  }}
+  if(length(bcolor_ind_low2) != 0){
+  for(i in 1:nrow(bcolor_ind_low2)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low2[i, 1], j = bcolor_ind_low2[i, 2], bg = '#78b64e')
+  }}
+  if(length(bcolor_ind_low3) != 0){
+  for(i in 1:nrow(bcolor_ind_low3)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low3[i, 1], j = bcolor_ind_low3[i, 2], bg = '#004600')
+  }}
+  if(length(bcolor_ind_low4) != 0){
+  for(i in 1:nrow(bcolor_ind_low4)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low4[i, 1], j = bcolor_ind_low4[i, 2], bg = '#004600')
+  }}
+  if(length(bcolor_ind_low5) != 0){
+  for(i in 1:nrow(bcolor_ind_low5)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low5[i, 1], j = bcolor_ind_low5[i, 2], bg = '#ff5b5b')
+  }}
+  if(length(bcolor_ind_low6) != 0){
+  for(i in 1:nrow(bcolor_ind_low6)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low6[i, 1], j = bcolor_ind_low6[i, 2], bg = '#ff5b5b')
+  }}
+  if(length(bcolor_ind_low7) != 0){
+  for(i in 1:nrow(bcolor_ind_low7)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low7[i, 1], j = bcolor_ind_low7[i, 2], bg = '#8e0000')
+  }}
+  if(length(bcolor_ind_low8) != 0){
+  for(i in 1:nrow(bcolor_ind_low8)) {
+    flx2 <- flx2 %>%
+      bg(i = bcolor_ind_low8[i, 1], j = bcolor_ind_low8[i, 2], bg = '#8e0000')
+     }}
+}
+if(length(color_ind1) != 0){
+  for(i in 1:nrow(color_ind1)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind1[i, 1], 
+                           j = color_ind1[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("1"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind2) != 0){
+  for(i in 1:nrow(color_ind2)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind2[i, 1], 
+                           j = color_ind2[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("2"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind3) != 0){
+  for(i in 1:nrow(color_ind3)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind3[i, 1], 
+                           j = color_ind3[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("3"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind4) != 0){
+  for(i in 1:nrow(color_ind4)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind4[i, 1], 
+                           j = color_ind4[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("4"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind5) != 0){
+  for(i in 1:nrow(color_ind5)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind5[i, 1], 
+                           j = color_ind5[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("5"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind6) != 0){
+  for(i in 1:nrow(color_ind6)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind6[i, 1], 
+                           j = color_ind6[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("6"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind7) != 0){
+  for(i in 1:nrow(color_ind7)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind7[i, 1], 
+                           j = color_ind7[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("7"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind8) != 0){
+  for(i in 1:nrow(color_ind8)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind8[i, 1], 
+                           j = color_ind8[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("8"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind9) != 0){
+  for(i in 1:nrow(color_ind9)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind9[i, 1], 
+                           j = color_ind9[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("9"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind10) != 0){
+  for(i in 1:nrow(color_ind10)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind10[i, 1], 
+                           j = color_ind10[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("10"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind11) != 0){
+  for(i in 1:nrow(color_ind11)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind11[i, 1], 
+                           j = color_ind11[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("11"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind12) != 0){
+  for(i in 1:nrow(color_ind12)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind12[i, 1], 
+                           j = color_ind12[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("12"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind13) != 0){
+  for(i in 1:nrow(color_ind13)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind13[i, 1], 
+                           j = color_ind13[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("13"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind14) != 0){
+  for(i in 1:nrow(color_ind14)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind14[i, 1], 
+                           j = color_ind14[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("14"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind15) != 0){
+  for(i in 1:nrow(color_ind15)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind15[i, 1], 
+                           j = color_ind15[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("15"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind16) != 0){
+  for(i in 1:nrow(color_ind16)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind16[i, 1], 
+                           j = color_ind16[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("16"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind17) != 0){
+  for(i in 1:nrow(color_ind17)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind17[i, 1], 
+                           j = color_ind17[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("17"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind18) != 0){
+  for(i in 1:nrow(color_ind18)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind18[i, 1], 
+                           j = color_ind18[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("18"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind19) != 0){
+  for(i in 1:nrow(color_ind19)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind19[i, 1], 
+                           j = color_ind19[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("19"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind20) != 0){
+  for(i in 1:nrow(color_ind20)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind20[i, 1], 
+                           j = color_ind20[i, 2],
+                           part = "body",
+                           value = as_paragraph("C", as_sub("20"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind21) != 0){
+  for(i in 1:nrow(color_ind21)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind21[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind21[i, 1], 
+                           j = color_ind21[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("1"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind22) != 0){
+  for(i in 1:nrow(color_ind22)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind22[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind22[i, 1], 
+                           j = color_ind22[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("2"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind23) != 0){
+  for(i in 1:nrow(color_ind23)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind23[i, 1], 
+                           j = color_ind23[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("3"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind24) != 0){
+  for(i in 1:nrow(color_ind24)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind24[i, 1], 
+                           j = color_ind24[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("4"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind25) != 0){
+  for(i in 1:nrow(color_ind25)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind25[i, 1], 
+                           j = color_ind25[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("5"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind26) != 0){
+  for(i in 1:nrow(color_ind26)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind26[i, 1], 
+                           j = color_ind26[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("6"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind27) != 0){
+  for(i in 1:nrow(color_ind27)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind27[i, 1], 
+                           j = color_ind27[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("7"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind28) != 0){
+  for(i in 1:nrow(color_ind28)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind28[i, 1], 
+                           j = color_ind28[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("8"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind29) != 0){
+  for(i in 1:nrow(color_ind29)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind29[i, 1], 
+                           j = color_ind29[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("9"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind30) != 0){
+  for(i in 1:nrow(color_ind30)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind30[i, 1], 
+                           j = color_ind30[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("10"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind31) != 0){
+  for(i in 1:nrow(color_ind31)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind31[i, 1], 
+                           j = color_ind31[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("11"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind32) != 0){
+  for(i in 1:nrow(color_ind32)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind32[i, 1], 
+                           j = color_ind32[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("12"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind33) != 0){
+  for(i in 1:nrow(color_ind33)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind33[i, 1], 
+                           j = color_ind33[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("13"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind34) != 0){
+  for(i in 1:nrow(color_ind34)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind34[i, 1], 
+                           j = color_ind34[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("14"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind35) != 0){
+  for(i in 1:nrow(color_ind35)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind35[i, 1], 
+                           j = color_ind35[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("15"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind36) != 0){
+  for(i in 1:nrow(color_ind36)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind36[i, 1], 
+                           j = color_ind36[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("16"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind37) != 0){
+  for(i in 1:nrow(color_ind37)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind37[i, 1], 
+                           j = color_ind37[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("17"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind38) != 0){
+  for(i in 1:nrow(color_ind38)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind38[i, 1], 
+                           j = color_ind38[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("18"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind39) != 0){
+  for(i in 1:nrow(color_ind39)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind39[i, 1], 
+                           j = color_ind39[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("19"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind40) != 0){
+  for(i in 1:nrow(color_ind40)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind40[i, 1], 
+                           j = color_ind40[i, 2],
+                           part = "body",
+                           value = as_paragraph("D", as_sub("20"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind41) != 0){
+  for(i in 1:nrow(color_ind41)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind41[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind41[i, 1], 
+                           j = color_ind1[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("1"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind42) != 0){
+  for(i in 1:nrow(color_ind42)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind42[i, 1], 
+                           j = color_ind42[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("2"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind43) != 0){
+  for(i in 1:nrow(color_ind43)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind43[i, 1], 
+                           j = color_ind43[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("3"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind44) != 0){
+  for(i in 1:nrow(color_ind44)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind44[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind44[i, 1], 
+                           j = color_ind4[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("4"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind45) != 0){
+  for(i in 1:nrow(color_ind45)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind45[i, 1], 
+                           j = color_ind45[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("5"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind46) != 0){
+  for(i in 1:nrow(color_ind46)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind46[i, 1], 
+                           j = color_ind46[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("6"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind47) != 0){
+  for(i in 1:nrow(color_ind47)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind47[i, 1], 
+                           j = color_ind47[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("7"),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind48) != 0){
+  for(i in 1:nrow(color_ind48)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind48[i, 1], 
+                           j = color_ind48[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("8"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind49) != 0){
+  for(i in 1:nrow(color_ind49)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind49[i, 1], 
+                           j = color_ind49[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("9"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind50) != 0){
+  for(i in 1:nrow(color_ind50)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind50[i, 1], 
+                           j = color_ind50[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("10"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind51) != 0){
+  for(i in 1:nrow(color_ind51)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind51[i, 1], 
+                           j = color_ind51[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("11"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind52) != 0){
+  for(i in 1:nrow(color_ind52)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind52[i, 1], 
+                           j = color_ind52[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("12"),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind53) != 0){
+  for(i in 1:nrow(color_ind53)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind53[i, 1], 
+                           j = color_ind53[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("13"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F815", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind54) != 0){
+  for(i in 1:nrow(color_ind54)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind54[i, 1], 
+                           j = color_ind54[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("14"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F816", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind55) != 0){
+  for(i in 1:nrow(color_ind55)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind55[i, 1], 
+                           j = color_ind55[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("15"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind56) != 0){
+  for(i in 1:nrow(color_ind56)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind56[i, 1], 
+                           j = color_ind56[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("16"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind57) != 0){
+  for(i in 1:nrow(color_ind57)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind57[i, 1], 
+                           j = color_ind57[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("17"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind58) != 0){
+  for(i in 1:nrow(color_ind58)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind58[i, 1], 
+                           j = color_ind58[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("18"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind59) != 0){
+  for(i in 1:nrow(color_ind59)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind59[i, 1], 
+                           j = color_ind59[i, 2],
+                           part = "body",
+                           value = as_paragraph("S", as_sub("19"),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
+                                                as_chunk("\U1F817", props = fp_text_default(color = "#000000",bold=TRUE))))}
+}
+if(length(color_ind60) != 0){
+  for(i in 1:nrow(color_ind60)) {
+  # flx2<- flx2 %>% 
+  #bg(i = color_ind1[i, 1], j = color_ind1[i, 2], bg = '#dbe7c2')
+  flx2 <- flx2 %>% compose(i = color_ind60[i, 1], 
+                           j = color_ind60[i, 2],
+                           part = "body",
+                           value = as_paragraph(NA))}
+}
+flx2 <- bold(flx2, bold = TRUE, part = "all")
+
+save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
 
 
-
-#{r,eval=TRUE,echo=F}
-# temporaneo
-# filter 
-# debug(tabe_tot)
-tabeHTMLfinal <- tabe_tot(workMatSco3, 
-                          first_last_years = paste(ptime_0,"/", 
-                                                   ptime_t,sep=""))
-
-
-
-out_packed_list$patterns <- list(css="<style>\n.vertical-text {\n\tdisplay: inline-block;\n\toverflow: hidden;\n\twidth: 1.3em;\n}\n.vertical-text__inner {\n\tdisplay: inline-block;\n\twhite-space: nowrap;\n\tline-height: 1.5;\n\ttransform: translate(0,100%) rotate(-90deg);\n\ttransform-origin: 0 0;\n}\n\n.vertical-text__inner:after {\n\tcontent: \"\";\n\tdisplay: block;\n\tmargin: -1.5em 0 100%;\n}\n\n\nbody {\n\tfont: 11px/1 Arial, sans-serif;\n}\n\ntable {\n\tmargin-top: 1em;\n}\nth,td {\n\tborder: 1px solid;\n\ttext-align:center;\n\tfont-weight: normal;\n\tpadding: 0.5em;\n}\nhead{\n   color: blue;\n}\n</style>",
-     html=tabeHTMLfinal)
-
-cat(tabeHTMLfinal)
+# tabeHTMLfinal <- tabe_tot(workMatSco2, 
+#                           first_last_years = paste(ptime_0,"/", ptime_t,sep=""))# "First/Last")
+# 
+# out_packed_list$patterns <- list(css="<style>\n.vertical-text {\n\tdisplay: inline-block;\n\toverflow: hidden;\n\twidth: 1.3em;\n}\n.vertical-text__inner {\n\tdisplay: inline-block;\n\twhite-space: nowrap;\n\tline-height: 1.5;\n\ttransform: translate(0,100%) rotate(-90deg);\n\ttransform-origin: 0 0;\n}\n\n.vertical-text__inner:after {\n\tcontent: \"\";\n\tdisplay: block;\n\tmargin: -1.5em 0 100%;\n}\n\n\nbody {\n\tfont: 11px/1 Arial, sans-serif;\n}\n\ntable {\n\tmargin-top: 1em;\n}\nth,td {\n\tborder: 1px solid;\n\ttext-align:center;\n\tfont-weight: normal;\n\tpadding: 0.5em;\n}\nhead{\n   color: blue;\n}\n</style>",
+#      html=tabeHTMLfinal)
+# 
+# cat(tabeHTMLfinal)
 ```
 
-```{r,echo=F,eval=F}
-# tests in progress to substitute the HTML table
 
- workMatSco2 %>%
-  kableExtra::kbl() %>%
-  kable_styling()
-
-workMatSco3 <- dplyr::rename(workMatSco3, `#(1)` = Catching_up ,
-                                          `#(9)` = Falling_away,
-                                          `#(6)` = Diving )
-#workMatSco3 %>%
-#  kable() %>%
-#  kable_styling()
-tmpRR <- names(workMatSco3)
-kable(workMatSco3,
-      "html",col.names = kableExtra::linebreak(c(tmpRR),align="c"
-                                               #,linebreaker="/"
-                                               )) %>% 
-  kableExtra::kable_styling(c("striped","bordered"), 
-                            full_width = F, position="left") %>%
-  kableExtra::row_spec(0, angle = 0)
-
+```{r ,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
+flxtab <- "flextab.png"
+include_graphics(flxtab)
 ```
  
  
+ 
+ 
+ 
+ 
 
-
-<br><br>
+<br>
 Legend:    
 
  * Indicator type: `r params$indiType`   
- * dashed red lines: Member States    
- * solid black lines: EU average   
+ * solid black lines: Member States   
+ * solid blue lines: EU average   
  
 
 
-
-
-```{r legend1,echo=FALSE,fig.width=6,fig.height=5} 
-refGGpat <- patt_legend_39()
-out_packed_list$gridLegend <- refGGpat
-
-grid.arrange(  refGGpat[[1]],
-               nrow = 1, ncol=1,
-      top= paste0("Patterns legend"),
-      bottom = "Time",
-      left= "Indicator value")
+```{r legend1,echo=FALSE,out.width="60%"} 
+conv <- "gg_patt_conv_annotated.png"
+# p1 <- readPNG(conv, native = T, info = T)
+include_graphics(conv)
 ```
 
 <br><br>
 
-```{r legend2,echo=FALSE,fig.width=6,fig.height=5} 
+```{r legend2,echo=FALSE,out.width="60%"} 
 
-grid.arrange(  refGGpat[[2]],
-               nrow = 1, ncol=1,
-      top= paste0("Patterns legend (continued)"),
-      bottom = "Time",
-      left= "Indicator value")
+div <- "gg_patt_div_annotated.png"
+# p2 <- readPNG(div, native = T, info = T)
+include_graphics(div)
 ```
 
+<br><br>
 
- 
-```{r OLDpattern,echo=FALSE,eval=FALSE,fig.width=8,fig.height=8} 
-if(params$indiType == "highBest"){refGGpat <- patt_legend(indiType = "highBest")
-} else{  refGGpat <- patt_legend(indiType = "lowBest")}
-gridExtra::grid.arrange(  refGGpat,
-               nrow = 1, ncol=1,
-      top= paste0("Patterns legend (continued)"),
-      bottom = "Time",
-      left= "Indicator value")
-out_packed_list$gridLegend <- refGGpat
+```{r legend3,echo=FALSE,out.width="60%"} 
+sam <- "gg_patt_same_annotated.png"
+# p3 <- readPNG(sam, native = T, info = T)
+include_graphics(sam)
 ```  
- 
- 
 
 
-<!-- **Note:** 21 is none of the previous patterns and requires visual inspection.-->
+<!--**Note:** 21 is none of the previous patterns and requires visual inspection.-->
 
 <br>
+ 
+Legend:     
 
-Legend:    
-
-  * Indicator type: `r params$indiType`     
-  * dashed red lines: Member States   
-  * solid black lines: EU average     
- 
- 
- 
- 
- 
- 
- 
- 
+  * Indicator type: `r params$indiType`   
+  * solid black lines: Member States   
+  * solid blue lines: EU average
  
  
  
 <br><br>
 
-```{r demeaGraphSet,echo=FALSE,eval=T}
-curCountries <- params$country
-if(!is.na(otherCountries[1])){
-  curCountries <- c(curCountries, otherCountries)
-}
-altezzaG <- 3 + 4 * (length(curCountries)/30)
-#height was 6
-```
+
+
 
 
 
 ### Total decrease and increase in the gap with the `r params$aggregation` mean  
 
 The graph shows the sum of the yearly deviations from `r params$aggregation` unweighted average in each of the countries selected.
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
 
-```{r demeaGraph,echo=FALSE,eval=T,fig.width=8,fig.height=altezzaG}
+```{r demeaGraph,echo=FALSE,eval=T,fig.width=6}
 curCountries <- params$country
 if(!is.na(otherCountries[1])){
   curCountries <- c(curCountries, otherCountries)
@@ -1141,8 +1852,10 @@ out_packed_list$Tot_inc_dec <- res_dev_pt$res
 
 The graph gives an overall idea of the distance of the Member States from the best performing country. It is calculated as the sum of the yearly deviations from the best performer. 
  
-
-```{r}
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r fig.width=6,fig.height=5}
 res_dep_best <- departure_best(wkDF, timeName =timeName,
                           indiType = params$indiType) 
 
@@ -1179,6 +1892,8 @@ out_packed_list$Dep_best <- res_dep_best_plt$res
 The table shows the country ranking in the `r params$aggregation` in each year, with 1 being the best performing country in `r params$aggregation` in a given year. 
 
 <br><br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
 
 ```{r}
 res_rank <- country_ranking(wkDF,timeName=timeName, time_0=ptime_0,
@@ -1217,4 +1932,3 @@ if(ncol(tmpRR) > 10){
 ```{r,echo=FALSE,eval=T}
 save(out_packed_list,file = out_packed_name)
 ```
-

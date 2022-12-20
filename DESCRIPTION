@@ -1,7 +1,7 @@
 Package: convergEU
 Type: Package
 Title: Monitoring Convergence of EU Countries
-Version: 0.6.3
+Version: 0.6.4
 Depends: R (>= 4.0.0)
 Authors@R: c(
            person("Federico M.", "Stefanini", 
@@ -12,10 +12,14 @@ Authors@R: c(
                   role  = c("arc")),
            person("Eleonora Peruffo", role = c("ctb")),        
            person("Nedka Nikiforova", role = c("ctb")),       
-           person("Chiara Litardi", role = c("ctb"))  
+           person("Chiara Litardi", role = c("ctb")),
+           person("Berta Mizsei", role= c("ctb")),
+           person("Ricardo Simon-Carbajo", role= c("ctb")),
+           person("Romila Ghosh", role= c("ctb")),
+           person("Andres Suarez-Cetrulo", role= c("ctb"))
            )
 Maintainer: Federico M. Stefanini <federico.stefanini@unifi.it>            
-URL: https://local.disia.unifi.it/stefanini/RESEARCH/coneu/tutorial-conv.html,
+URL: https://www.eurofound.europa.eu/sites/default/files/tutorial_analysis_of_convergence_with_the_convergeu_package.pdf,
      https://www.eurofound.europa.eu/sites/default/files/wpef20008.pdf,
      https://www.eurofound.europa.eu/sites/default/files/ef_publication/field_ef_document/ef18003en.pdf
 Description: Indicators and measures by country and time describe
@@ -40,7 +44,8 @@ Imports:
      broom,
      stringr,
      rmarkdown,
-     ggpubr
+     ggpubr,
+     leaflet
 Suggests:
      devtools,
      formattable,
@@ -57,5 +62,5 @@ Suggests:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr

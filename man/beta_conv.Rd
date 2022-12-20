@@ -10,7 +10,8 @@ beta_conv(
   time_t,
   all_within = FALSE,
   timeName = "time",
-  useTau = TRUE
+  useTau = TRUE,
+  useCon = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ time_0.}
 
 \item{useTau}{if TRUE the log ratio of indicator values is divided for
 the elapsed time (years).}
+
+\item{useCon}{if TRUE replaces 0 with a minimum constant value}
 }
 \value{
 a list with the value of beta-conv, by OLS (least-squares), the

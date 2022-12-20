@@ -19,22 +19,19 @@ Note that EU27 refers to Member States after the 1st February 2020, while EU28 i
 tag up to 31 March 2020. String EU27_2020 and EU27_2007 as defined by Eurofound are also
 available.
 
-The following clusters of countries are stored: EU12, EU15, EU19, EU25,
-          EU27, EA, Eurozone. Current Member States are elements of EU27_2020.
+The following clusters of countries are stored: EU12, EU15, EU25,
+          EU27, EA, Euroarea. Current Member States are elements of EU27_2020.
          The cluster geoRefEUF is composed of both Member States and other countries
          (neighboring countries). The component "metaEUstat" contains the indicators'
          information, while the component "paralintags" is for defining patterns for the Member States.
 }
 \examples{
 
-# Member States in the cluster Eurozone:
-convergEU_glb()$Eurozone
+# Member States in the cluster Euroarea:
+convergEU_glb()$Euroarea
 
 # Cluster EU12 of Member States:
 convergEU_glb()$EU12
-
-# Cluster EU19 of Member States:
-convergEU_glb()$EU19
 
 # Cluster EU27 of Member States after 31 jan 2020:
 convergEU_glb()$EU27

@@ -11,24 +11,18 @@
 Beta convergence is a catching-up process in which poorer performing countries grow faster than the best perfoming ones. The red line shows the relationship between the growth of an indicator over a certain period of time and its initial value. Beta convergence exists if that relation is statistically significant and negative. Its coefficient gives an indication of the speed of the process.
  
 <br><br> 
-The calculation of beta convergence is performed according to the  following linear model:
-$$
-\tau^{-1}~ ln(y_{m,i,t+\tau})-ln(y_{m,i,t}) = \tau^{-1}~log\left\{\frac{y_{m,i,t+\tau}}{y_{m,i,t}}\right\} = 
- \beta_0 + \beta_1 ~~ln(y_{m,i,t}) +\epsilon_{m,i,t}
-$$
-where $m$ represent the member state of EU (country), $i$ refers to the indicator
-of interest, $t$ is the reference time and $\tau \in \{1,2,\ldots\}$
-the size of the time window.  
+<img src="beta_convergence.png">
  
 <br>
 
 
 
-
-```{r,echo=FALSE}
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo=FALSE,fig.width=6}
 
 betaRes <- beta_conv(tavDes = wkDF2, time_0 = ptime_0, time_t = ptime_t, 
-                 all_within = FALSE, timeName = timeName,useTau=TRUE)
+                 all_within = FALSE, timeName = timeName,useTau=TRUE, useCon=FALSE)
 # Check out with convergeEU team at Eurofound 
 if(betaRes$res$beta1 > 0 && params$indiType == 'highBest'){
    diagnosis <- 'divergence'

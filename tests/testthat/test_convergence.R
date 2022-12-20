@@ -151,7 +151,8 @@ test_that("Beta convergence,  several  times.", {
                               2018,
                               all_within=FALSE,
                               timeName="time",
-                              useTau=TRUE)
+                              useTau=TRUE,
+                              useCon = TRUE)
         #
         expect_true(is.null(res_beta$err))
     })

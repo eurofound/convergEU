@@ -21,6 +21,7 @@
 #' @param  timeName the name of the variable that contains time information.
 #' @param  useTau  if TRUE the log ratio of indicator values is divided for
 #'         the elapsed time (years).
+#' @param useCon if TRUE replaces 0 with a minimum constant value
 #' @return a list with the value of beta-conv, by OLS (least-squares), the
 #'         transformed data and standard statistical tests.
 #'
@@ -84,7 +85,9 @@
 #' @export
 #'
 beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
-                      timeName = "time",  useTau = TRUE){
+                      timeName = "time",  useTau = TRUE, useCon = FALSE){
+
+
   obj_out <- convergEU_glb()$tmpl_out
   # check if timeName is present
   if(not_in(timeName,names(tavDes))) {
@@ -104,16 +107,35 @@ beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
     obj_out$err <- "Error: wrong selected time window."
     return(obj_out);
   }
+  # implementing constant where min is 0
+  ecode <- names(tavDes)[-c(1)]
+  tempo_val1 <- unlist(tavDes[,ecode])
+  tempo_val <- tempo_val1[tempo_val1 > 0]
+  if(useCon){
+    minim_not_null <- min(tempo_val)/100
+    if(all(tavDes[,ecode] >= 0)){
+      for(auxvv in ecode){
+        estrattore_nulli <- tavDes[[auxvv]] == 0
+        tavDes[[auxvv]][estrattore_nulli] <- minim_not_null
+      }
+    }
+  }else{
+    if(length(tempo_val1) > length(tempo_val)){
+      obj_out$err <- "Error: One or more values zero or negative"
+    }
+  }
+
+
   # Make standard checks on the dataframe
   tt_out <- check_data(tavDes, timeName = timeName)
   if(!is.null(tt_out$err)){
     return(tt_out);
-    }
+  }
   # At least three columns and 2 rows needed due to differencing
   if(nrow(tavDes) < 2 && ncol(tavDes) < 4){
     obj_out$err <- "Error: at least 2 rows and 4 columns needed in the dataframe."
     return(obj_out)
-    }
+  }
   # extract and sort
   tavDes <- dplyr::arrange_at(tavDes,timeName)
   #timeRaw <- unlist(tavDes[,timeName])
@@ -128,13 +150,13 @@ beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
   }
   #
   if(all_within) {# all times within the interval
-      resTB <- tavDes[pos_all,]
-      # sorted by time
-      resTB <- dplyr::arrange_at(resTB,timeName)
-   }else{
-      #just the two considered rows
-      resTB <- tavDes[c(pos_t0,pos_tt),]
-      };
+    resTB <- tavDes[pos_all,]
+    # sorted by time
+    resTB <- dplyr::arrange_at(resTB,timeName)
+  }else{
+    #just the two considered rows
+    resTB <- tavDes[c(pos_t0,pos_tt),]
+  };
   # now it it sure the reference is in the first row
   # Non negative values? Needed because log(indicator) taken
   if( sum(dplyr::select(resTB, -timeName)  <= 0) > 0){
@@ -146,26 +168,26 @@ beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
   ## wTB <- cbind(dplyr::select(resTB, timeName),reslogTB)
   ## Should we divide the ordinates by number of elapsed years? YES, possibly
   workTB <- dplyr::tibble(
-        deltaIndic = as.numeric(reslogTB[2,] - reslogTB[1,]),
-        indic = as.numeric(reslogTB[1,]),
-        countries = names(reslogTB))
+    deltaIndic = as.numeric(reslogTB[2,] - reslogTB[1,]),
+    indic = as.numeric(reslogTB[1,]),
+    countries = names(reslogTB))
   if(useTau){
     # divide by elapsed time
     workTB <- dplyr::mutate(workTB, deltaIndic = .data$deltaIndic / delta_time);
-    }
+  }
   #
   if(nrow(reslogTB) > 2){# several years besides time_t and time_0
     for(auxR in 3:nrow(reslogTB)){
-       tmpTB <- dplyr::tibble(
-         deltaIndic = as.numeric(reslogTB[auxR,] - reslogTB[1,]),
-         indic = as.numeric(reslogTB[1,]),# maybe reslogTB[auxR-1, ]
-         countries = names(reslogTB))
-       # tau?
-       if(useTau){
-         # divide by elapsed time
-         tmpTB <- dplyr::mutate(tmpTB, deltaIndic = .data$deltaIndic / delta_time);
-         }
-        workTB <- rbind(workTB,tmpTB)# end add_row
+      tmpTB <- dplyr::tibble(
+        deltaIndic = as.numeric(reslogTB[auxR,] - reslogTB[1,]),
+        indic = as.numeric(reslogTB[1,]),# maybe reslogTB[auxR-1, ]
+        countries = names(reslogTB))
+      # tau?
+      if(useTau){
+        # divide by elapsed time
+        tmpTB <- dplyr::mutate(tmpTB, deltaIndic = .data$deltaIndic / delta_time);
+      }
+      workTB <- rbind(workTB,tmpTB)# end add_row
     };
   }# end several years
   #
@@ -181,5 +203,3 @@ beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
   obj_out$res$beta1 <- as.numeric(obj_out$res$summary[2,2])
   return(obj_out)
 }
-
-utils::globalVariables(c(".data"))

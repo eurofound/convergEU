@@ -11,8 +11,8 @@ test_that("Simple  extraction of METADATA", {
     fromTime=2003,
     toTime=2015)
   # myTB
-  expect_equal(myTB$res$`Worksheet name`[1], "INDEX" )
-  expect_equal(ncol(myTB$res),7 )
+  expect_equal(myTB$res$`Worksheet.name`[1], "INDEX" )
+  expect_equal(ncol(myTB$res),12 ) # earlier set as equal to 7
 })
 
 
@@ -91,4 +91,3 @@ test_that("Simple  extraction  indicator  MINISTER less countries", {
   expect_equal(dim(myTB$res)[1], 5 )
 })
 
- 

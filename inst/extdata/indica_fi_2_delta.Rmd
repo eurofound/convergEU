@@ -16,29 +16,15 @@ editor_options:
 Delta convergence is a reduction of a country distance from the best performing Member State. There is convergence if there is a decrease in the period considered. 
 
 <br><br> 
-Let $y_{m,i,t}$ be the value of indicator $i$ for member state $m$ at time $t$,
-and $y^{(M)}_{i,t}$ the maximum value  over member states in the 
-reference set $A$:
-$$
-y^{(M)}_{i,t} = max(\{ y_{m,i,t}: m \in A\})
-$$
-
-The distance of a member state $m$ from the top performer at time $i$ is:
-$$
-y^{(M)}_{i,t} - y_{m,i,t}
-$$
-thus the overall distance at time $t$, called delta, is the sum of distances over the 
-reference set  $A$ of MS:
-$$
-\delta_{i,t} = \sum_{m \in A} (y^{(M)}_{i,t} -  y_{m,i,t})
-$$
-for the considered indicator $i$.
+<img src="delta_convergence.png">
+<br>
 
 For each year, the above summaries are calculated to assess if a reduction in 
 the amplitude on the took place.
 <br> <br>
-
-```{r,echo = FALSE}
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo = FALSE,fig.width=6}
 ## already set at start
 resDelta <-   delta_conv(wkDF2,
                          timeName = timeName,

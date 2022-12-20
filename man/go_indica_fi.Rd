@@ -22,7 +22,8 @@ go_indica_fi(
   pdf_out = FALSE,
   workTB = NULL,
   selfContained = FALSE,
-  eige_layout = FALSE
+  eige_layout = FALSE,
+  memStates = "quintiles"
 )
 }
 \arguments{
@@ -66,6 +67,8 @@ current time.}
 \item{selfContained}{TRUE if just one file is desired}
 
 \item{eige_layout}{TRUE if the EIGE layout is desired}
+
+\item{memStates}{Member States visualizations, default is set as quintiles.}
 }
 \description{
 An auxiliary function to compile a rmarkdown file to produce the indicator fiche in
