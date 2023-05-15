@@ -46,10 +46,11 @@ extract_indicator_ECG <- function(
     type_flag = FALSE){
   #
   # available indicators on March 2021
-  indi_all_ECG <- c( "demo_magec_AND_demo_pjan","dataset2",
+  indi_all_ECG <- c( "TEPSR_LM412",  "TEPSR_SPI110",
+                     "TEPSR_SPI120","TEPSR_SPI130",
                      "METADATA")
-  indi_type_ECG <- c("lowbest", "lowBest",NA)
-  indi_minmax_ECG<- c("minimisation","minimisation",NA)
+  indi_type_ECG <- c("lowbest", "lowBest","lowBest","lowBest",NA)
+  indi_minmax_ECG<- c("minimisation","minimisation","minimisation","minimisation",NA)
   #
   out_obj <- convergEU_glb()$tmpl_out
   myTB <- NULL
