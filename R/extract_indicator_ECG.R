@@ -48,7 +48,7 @@ extract_indicator_ECG <- function(
   # available indicators on March 2021
   indi_all_ECG <- c( "TEPSR_LM412",  "TEPSR_SPI110",
                      "TEPSR_SPI120","TEPSR_SPI130",
-                     "METADATA")
+                     "METADATA_ECG")
   indi_type_ECG <- c("lowbest", "lowBest","lowBest","lowBest",NA)
   indi_minmax_ECG<- c("minimisation","minimisation","minimisation","minimisation",NA)
   #
