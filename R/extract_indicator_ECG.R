@@ -27,10 +27,10 @@
 #'     indicator_code = "METADATA_ECG" #Code_in_database
 #'     )
 #'
-#' # Extract indicator "dataset2" from 2007 to 2021:
+#' # Extract indicator "dataset2" from 2010 to 2021:
 #' myTB2 <- extract_indicator_ECG(
 #'     indicator_code = "dataset2", #Code_in_database
-#'     fromTime=2007,
+#'     fromTime=2010,
 #'     toTime=2021)
 #'
 #'
