@@ -2136,10 +2136,8 @@ if(length(color_ind60) != 0){
 }
 flx2 <- bold(flx2, bold = TRUE, part = "all")
 
-
-
-save_as_html(flx2,path="flx2.html")
-
+save_as_html(flx2,path="fflextab.png")
+webshot2::webshot("flx2.html", file="flextab.png")
 
 # tabeHTMLfinal <- tabe_tot(workMatSco2, 
 #                           first_last_years = paste(ptime_0,"/", ptime_t,sep=""))# "First/Last")
