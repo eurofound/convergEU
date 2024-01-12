@@ -111,8 +111,13 @@ down_lo_EUS <- function(
   }
   ## OK data downloaded
   # early return for bulk data
-  if(rawDump) return(downTB)
+  if(rawDump) 
+        if ("TIME_PERIOD" %in% names(downTB))  # 12-01-2024 Eurostat changed the variable time to TIME_PERIOD
+      names(downTB)[names(downTB) == 'TIME_PERIOD'] <- 'time'
+    return(downTB)
   ## check if time present
+  if ("TIME_PERIOD" %in% names(downTB))  # 12-01-2024 Eurostat changed the variable time to TIME_PERIOD
+  names(downTB)[names(downTB) == 'TIME_PERIOD'] <- 'time'
   isTime <- "time" %in% names(downTB)
   if(isTime){
     test91 <- fromTime <= downTB$time
