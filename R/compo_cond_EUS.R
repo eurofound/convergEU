@@ -9,7 +9,7 @@
 #'
 compo_cond_EUS <- function(myScarica){
   all_vars <- names(myScarica)
-  left_over <- setdiff(all_vars,c("sex","age","TIME_PERIOD","geo","values"))  # 12-01-2023 - Eurostat changed the variable name
+  left_over <- setdiff(all_vars,c("sex","age","TIME_PERIOD","geo","values"))  # 12-01-2024 - Eurostat changed the variable name
   if(length(left_over) <1) return(NULL)
   # known_vars <- setdiff(c("sex","age","time","geo","values"),all_vars)
   tmpTB <- dplyr::select(myScarica,left_over)
