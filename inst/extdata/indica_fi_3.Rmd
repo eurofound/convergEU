@@ -901,8 +901,7 @@ df2$label_t_1<-ifelse(df2[as.character(maxiT)]==5,"Cluster 1 (lagging behind)",
 geodata_countries <- get_eurostat_geospatial(output_class = "sf", 
                                              resolution = "60", 
                                              nuts_level = "0", 
-                                             year = "2016", make_valid = FALSE)  ##n get_eurostat_geospatial(output_class = "sf", resolution = "10",  :
-##   Default of 'make_valid' for 'output_class="sf"' will be changed in the future (see function details).
+                                             year = "2016")  ##n get_eurostat_geospatial(output_class = "sf", resolution = "10",  : # 12-01-2024 make_valid has been Deprecated
 map_data<- inner_join(geodata_countries, df2,by="id")
 #
 map_data$label_change<-factor(map_data$label_change,
