@@ -31,7 +31,7 @@
 #' @param indiName  name of the considered indicator
 #' @param workTB  tibble containing data, optional, as alternative to a global object.
 #'
-#' @references{\url{https://local.disia.unifi.it/stefanini/RESEARCH/coneu/tutorial-conv.html}}
+#' @references{\url{https://www.eurofound.europa.eu/system/files/2022-04/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf}}
 #'
 #'
 #'
