@@ -1043,7 +1043,7 @@ webshot("temp1.html", file = "map_t_1.png",
 
 ```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
 map1 <- "map_t_1.png"
-# include_graphics(map1)
+#include_graphics(map1)
 ```
 
 
@@ -2150,7 +2150,7 @@ webshot2::webshot("flx2.html", file="flextab.png")
 
 ```{r ,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
 flxtab <- "flextab.png"
-include_graphics(flxtab)
+#include_graphics(flxtab)
 ```
  
  
