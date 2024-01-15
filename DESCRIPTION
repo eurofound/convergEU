@@ -1,11 +1,11 @@
 Package: convergEU
 Type: Package
 Title: Monitoring Convergence of EU Countries
-Version: 0.6.4
+Version: 0.7
 Depends: R (>= 4.0.0)
 Authors@R: c(
            person("Federico M.", "Stefanini", 
-                  email = "federico.stefanini@unifi.it",
+                  email = "federico.stefanini@unimi.it",
                   role  = c("arc","aut", "cre")),
            person("Massimiliano","Mascherini",
                   email = "massimiliano.mascherini@eurofound.europa.eu",    
@@ -18,7 +18,7 @@ Authors@R: c(
            person("Romila Ghosh", role= c("ctb")),
            person("Andres Suarez-Cetrulo", role= c("ctb"))
            )
-Maintainer: Federico M. Stefanini <federico.stefanini@unifi.it>            
+Maintainer: Eleonora Peruffo <eleonora.peruffo@eurofound.europa.eu>            
 URL: https://www.eurofound.europa.eu/sites/default/files/tutorial_analysis_of_convergence_with_the_convergeu_package.pdf,
      https://www.eurofound.europa.eu/sites/default/files/wpef20008.pdf,
      https://www.eurofound.europa.eu/sites/default/files/ef_publication/field_ef_document/ef18003en.pdf
