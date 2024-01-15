@@ -1,11 +1,14 @@
 #' Smoother based on weighting
 #'
-#' The smoother substitutes an original raw value $y_{m,i,t}$ of country $m$
-#' indicator $i$ at time $t$ with the weighted average
-#' $$\\check{y_{m,i,t}} = y_{m,i,t-1} ~ (1-w)/2   +w ~y_{m,i,t} +y_{m,i,t+1} ~(1-w)/2$$,
-#' where $0< w \\leq 1$. The special case $w=1$ corresponds to no smoothing.
+#' The smoother substitutes an original raw value
+#' Y(m,i,t)
+#' of country m
+#' indicator i at time t with the weighted average
+#' y(m,i,t) = y(m,i,t-1) (1-w)/2 + w y(m,i,t) + y(m,i,t+1) (1-w)/2
+#'  where 0 < w < 1.
+#'The special case w=1 corresponds to no smoothing.
 #' In case of missing values an NA is returned. If the weight is outside
-#' the interval $(0,1]$ then a NA is returned.
+#' the interval (0,1] then a NA is returned.
 #' The first and last values are smoothed using weights $w$ and $1-w$.
 #'
 #' @param  myTB  a complete dataset time by countries, with just country columns.

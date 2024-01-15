@@ -12,10 +12,10 @@ This is the development release.
 
 Some references  are:   
 
-  *  [tutorial-conv.html](https://www.eurofound.europa.eu/sites/default/files/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf)   
-  *  [Eurofound working paper](https://www.eurofound.europa.eu/sites/default/files/wpef20008.pdf) 
-  *  [Eurofound research report](https://www.eurofound.europa.eu/sites/default/files/ef_publication/field_ef_document/ef18003en.pdf)       
-  *  To prepare fiches without any R code, please visit the Eurofound official  webapge of the [**convergEU app**](https://www.eurofound.europa.eu/data/convergence-hub/convergeu-app)  
+  *  [tutorial-conv.html](https://www.eurofound.europa.eu/system/files/2022-04/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf)   
+  *  [Eurofound working paper](https://www.eurofound.europa.eu/en/publications/eurofound-paper/2020/monitoring-upward-convergence-eu-r-convergeu-package) 
+  *  [Eurofound research report](https://www.eurofound.europa.eu/en/publications/2018/upward-convergence-eu-concepts-measurements-and-indicators)       
+  *  To prepare fiches without any R code, please visit the Eurofound official  webapge of the [**convergEU app**](https://www.eurofound.europa.eu/en/resources/convergence-monitoring-hub/perform-convergence-analysis-eu-using-convergeu-app)
 
 The stable release of the R package is available at https://CRAN.R-project.org/package=convergEU
 
@@ -26,7 +26,7 @@ This project is a joint work with  **Eurofound** developed under **contract &#84
 
 <br>  
 
-December 2022 -The package has been updated to add patterns (from 39 to 59) to the country dynamics analysis, maps have also been added to the fiches.
+January 2024 -The package has been updated to add patterns (from 39 to 59) to the country dynamics analysis, maps have also been added to the fiches.
 
 You may use  *devtools* to  install the current version under development:   
 
