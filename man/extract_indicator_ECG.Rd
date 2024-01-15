@@ -13,7 +13,7 @@ extract_indicator_ECG(
 )
 }
 \arguments{
-\item{indicator_code}{one of the following strings:"demo_magec_AND_demo_pjan","METADATA_ECG"}
+\item{indicator_code}{one of the following strings:"dataset2", "demo_magec_AND_demo_pjan"}
 
 \item{fromTime}{first year to be considered}
 
@@ -29,7 +29,7 @@ is returned; if METADATA_ECG is selected, NA is returned}
 a dataset (tibble) years by countries
 }
 \description{
-From the ECG database, a dataset is created with structure
+From the ECG database, a dataset is created whose structure is
 years by countries.
 }
 \details{
@@ -45,10 +45,10 @@ myTB1 <- extract_indicator_ECG(
     indicator_code = "METADATA_ECG" #Code_in_database
     )
 
-# Extract indicator "demo_magec_AND_demo_pjan" from 2010 to 2015:
+# Extract indicator "dataset2" from 2010 to 2021:
 myTB2 <- extract_indicator_ECG(
-    indicator_code = "demo_magec_AND_demo_pjan", #Code_in_database
-    fromTime=2007,
+    indicator_code = "dataset2", #Code_in_database
+    fromTime=2010,
     toTime=2021)
 
 

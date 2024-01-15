@@ -68,25 +68,8 @@ myDF2 <- down_lo_EUS(indicator_code = "lfsa_ergaed",
                     rawDump=FALSE,
                     uniqueIdentif = 3)
 
-
-myDF3 <- down_lo_EUS(indicator_code = "t2020_rk310",
-                     fromTime = 2005,
-                     toTime = 2015,
-                     gender=  "F",
-                     ageInterv = NA,
-                     rawDump=FALSE,
-                     uniqueIdentif = 1)
-
-myDF4 <- down_lo_EUS(indicator_code = "t2020_rk310",
-                     fromTime = 2005,
-                     toTime = 2015,
-                     gender=  "F",
-                     ageInterv = "Y15-39",
-                     rawDump=FALSE,
-                     uniqueIdentif = 1)
-
 }
 }
 \references{
-{\url{https://local.disia.unifi.it/stefanini/RESEARCH/coneu/tutorial-conv.html}}
+{\url{https://www.eurofound.europa.eu/system/files/2022-04/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf}}
 }
