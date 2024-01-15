@@ -1444,7 +1444,8 @@ go_ms_fi(
     author = 'A.Student',
     outFile = 'Germany-up2-2016', 
     outDir = "tt-fish",
-    indiName= 'emp_20_64_MS'
+    indiName= 'emp_20_64_MS',
+    memstates='quintiles'
 )
   
 ```
@@ -1511,7 +1512,8 @@ go_indica_fi(
     auth = 'A.Student',
     dataNow =  '2019/05/16',
     outFile = "test_IT-emp_20_64_MS",
-    outDir = "tt-fish"
+    outDir = "tt-fish",
+    memstates='quintiles'
   )
 ```
 
@@ -1535,7 +1537,7 @@ R package version 1.17.1.2, URL https://CRAN.R-project.org/package=caTools.
 
   * Nedka D. Nikiforova, Federico M. Stefanini, Chiara Litardi, Eleonora Peruffo and Massimiliano Mascherini (2020) Tutorial: analysis of convergence with the convergEU package.
   Package vignette
-  URL https://local.disia.unifi.it/stefanini/RESEARCH/coneu/tutorial-conv.html     
+  URL https://www.eurofound.europa.eu/system/files/2022-04/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf    
   
 <br><br>  
   
