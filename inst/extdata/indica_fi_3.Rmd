@@ -85,7 +85,7 @@ params$seleMeasure <- 'all'
 params$seleAggre <- 'EU12'
 params$x_angle<- 45
 params$data_res_download <- TRUE
-params$auth <- 'A.P.Student'
+params$auth <- 'Eurofound'
 params$outFile <- "test_indica-fi-cust"
 # params$outDir <-
 params$outDir <-   "../tt-fish"
