@@ -114,6 +114,8 @@ down_lo_EUS <- function(
       names(downTB)[names(downTB) == 'TIME_PERIOD'] <- 'time'
   # early return for bulk data
   if(rawDump) return(downTB)
+  # init flags to extract data
+  estrattore <- rep(TRUE,nrow(downTB)) #Edit suggested by Federico Stefanini
   ## check if time present
   isTime <- "time" %in% names(downTB)
   if(isTime){
