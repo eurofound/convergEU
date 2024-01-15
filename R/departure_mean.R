@@ -11,7 +11,7 @@
 #' @return  list of tibbles containing  labelled departures from the mean, square difference from the mean,
 #'          and percentage of deviance.
 #'
-#' @references{\url{https://local.disia.unifi.it/stefanini/RESEARCH/coneu/tutorial-conv.html}}
+#' @references{\url{https://www.eurofound.europa.eu/system/files/2022-04/introduction-to-the-convergeu-package-0.6.4-tutorial-v2-apr2022.pdf}}
 #'
 #' @examples
 #'
