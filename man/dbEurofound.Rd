@@ -27,7 +27,7 @@ A tibble dataset  with 17 columns
 }
 }
 \source{
-\url{https://www.eurofound.europa.eu/surveys/about-eurofound-surveys/data-availability#datasets}
+\url{https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability}
 }
 \usage{
 data(dbEurofound)

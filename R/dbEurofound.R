@@ -10,7 +10,7 @@
 #' Further details and metainformation on these data are contained into
 #' the dataset *dbEUF2018meta*, say *data(dbEUF2018meta)* in R.
 #'
-#' @source \url{https://www.eurofound.europa.eu/surveys/about-eurofound-surveys/data-availability#datasets}
+#' @source \url{https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability}
 #' @docType data
 #' @keywords datasets
 #' @name dbEurofound

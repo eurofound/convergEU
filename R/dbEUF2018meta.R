@@ -11,7 +11,7 @@
 #' "_y"	years.
 #'
 #'
-#' @source \url{https://www.eurofound.europa.eu/surveys/about-eurofound-surveys/data-availability#datasets}
+#' @source \url{https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability}
 #' @docType data
 #' @keywords datasets
 #' @name dbEUF2018meta

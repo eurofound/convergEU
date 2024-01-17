@@ -8,7 +8,7 @@
 A dataset  with 13 rows and 10 columns
 }
 \source{
-\url{https://www.eurofound.europa.eu/surveys/about-eurofound-surveys/data-availability#datasets}
+\url{https://www.eurofound.europa.eu/en/surveys/about-eurofounds-surveys/data-availability}
 }
 \usage{
 data(dbEUF2018meta)

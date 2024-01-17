@@ -53,8 +53,8 @@ out_packed_list$betaSummary <-  list(
 
 beta_conv_gr1 <- qplot(betaRes$res$workTB$indic,
       betaRes$res$workTB$deltaIndic,
-      xlab= paste("log ",indiName ),
-      ylab= paste("Log rate of growth:",ptime_0,"-",ptime_t)) +
+      xlab= paste("Log ",indiName ),
+      ylab= paste("Log growth:",ptime_0,"-",ptime_t)) +
   geom_abline(intercept = as.numeric(betaRes$res$summary[1,2]),
               slope = as.numeric(betaRes$res$summary[2,2]),
               colour = "red") +

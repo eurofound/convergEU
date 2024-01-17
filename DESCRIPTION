@@ -1,7 +1,7 @@
 Package: convergEU
 Type: Package
 Title: Monitoring Convergence of EU Countries
-Version: 0.7.1
+Version: 0.7.2
 Depends: R (>= 4.0.0)
 Authors@R: c(
            person("Federico M.", "Stefanini", 
@@ -63,7 +63,7 @@ Suggests:
      rvest,
      testthat,
      utf8
-License: `use_gpl3_license()`
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.0
