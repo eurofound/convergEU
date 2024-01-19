@@ -64,7 +64,7 @@ go_indica_fi <-  function(
   workTB = NULL,
   selfContained = FALSE,
   eige_layout = FALSE,
-  memStates = 'quintiles'# ('quintiles', 'default', 'custom')
+  memStates = 'quintiles'# ('quintiles', 'default', 'custom', 'NUTS2')
 ){
   if(is.na(workDF) & (!is.null(workTB))){
     curTB <-  workTB
@@ -96,6 +96,9 @@ go_indica_fi <-  function(
     }else if(memStates == 'custom')
     {
       sourceFile1 <- system.file("extdata", "indica_fi_4.Rmd", package = "convergEU")
+    }else if(memStates == 'NUTS2')
+    {
+      sourceFile1 <- system.file("extdata", "indica_fi_NUTS2.Rmd", package = "convergEU")
     }
   }
   sourceFile2 <- system.file("extdata", "eurofound.jpg", package = "convergEU")
@@ -142,6 +145,9 @@ go_indica_fi <-  function(
   }else if(memStates == 'custom')
   {
     sourcePF1 <- file.path(outDir,"indica_fi_4.Rmd")
+  }else if(memStates == 'NUTS2')
+  {
+    sourcePF1 <- file.path(outDir,"indica_fi_NUTS2.Rmd")
   }
   sourcePF2 <- file.path(outDir,"eurofound.jpg")
   sourceF1 <- file.path(outDir,"beta_convergence.png")

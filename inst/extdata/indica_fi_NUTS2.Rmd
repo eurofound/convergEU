@@ -4,15 +4,15 @@ output:
     css: EUF.css
     fig_crop: false
 params:
-      dataNow: "3/03/2020"
-      workingDF: 'emp_20_64_MS'
-      time_0: 2008
-      time_t: 2018
+      dataNow: "4/08/2023"
+      workingDF: 'n2'
+      time_0: 2007
+      time_t: 2021
       timeName: 'time'
       indiType: 'lowBest'
       indicaT: NA
       seleMeasure: 'all'
-      seleAggre: 'EU12'
+      seleAggre: 'custom'
       x_angle: NA
       data_res_download: TRUE
       auth: 'Eurofound'
@@ -20,7 +20,7 @@ params:
       outDir: "../tt-fish"
       pdf_out: TRUE
       workTB: !r emp_20_64_MS
-      memStates: 'custom'
+      memStates: 'NUTS2'
 ---
  
 
@@ -48,6 +48,12 @@ library(officer)
 library(magrittr)
 library(cowplot)
 library(png)
+library(leaflet)
+library(leaflet.extras)
+library(png)
+library(htmltools)
+library(htmlwidgets)
+library(webshot)
  
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -74,11 +80,11 @@ params$dataNow <- Sys.Date()
 params$time_0 <- 2008
 params$time_t <- 2018
 params$timeName  <- 'time'
-params$workingDF  <- 'emp_20_64_MS'
-params$indicaT <- 'emp_20_64_MS'
+params$workingDF  <- 'n2'
+params$indicaT <- 'n2'
 params$indiType<- 'lowBest' # highBest
 params$seleMeasure <- 'all'
-params$seleAggre <- 'EU12'
+params$seleAggre <- 'custom'
 params$x_angle<- 45
 params$data_res_download <- TRUE
 params$auth <- 'A.P.Student'
@@ -87,7 +93,7 @@ params$outFile <- "test_indica-fi-cust"
 params$outDir <-   "../tt-fish"
 params$pdf_out <- TRUE
 params$workTB <- emp_20_64_MS
-params$memStates <- 'custom'
+params$memStates <- 'NUTS2'
 ```
 
 
@@ -379,6 +385,7 @@ mGallEU
  
  
  
+ 
 
 <br><br>
 
@@ -624,11 +631,11 @@ if( (diffeAve > 0 )  &  (params$indiType =="lowBest")){
    <br> 
   * Overall result (interpretation): **`r   labelAveDelta`**      
  <br>    
-  * Member states with increment of mean in year `r ptime_t` with respect  to year   `r ptime_0`:   
+  * Regions where mean increased in year `r ptime_t` with respect  to year   `r ptime_0`:   
   
       + `r  paste(sort(dichia_con_stddev$res$declaration_split$names_incre),collapse="; ")`   
       
-  * Member states with decrement of means in year `r ptime_t` with respect  to year   `r ptime_0`:    
+  * Regions where mean decreased in year `r ptime_t` with respect  to year   `r ptime_0`:    
   
       + `r  paste(sort(dichia_con_stddev$res$declaration_split$names_decre),collapse="; ")`   
 
@@ -753,11 +760,11 @@ if(semaforo[["gamma"]]){
 
 <br><br> 
 
-## Member States dynamics
+## Regions dynamics
 
 
-The dynamics of Member States show the differences in the situation of single
- Member States which can be hidden under the use of a single indicator.
+The dynamics of regions show the differences in the situation of single
+ regions which can be hidden under the use of a single indicator.
 Understanding the dynamics is also necessary to better identify possible drivers
  of convergence and divergence as well as structural deficiencies or sustainable
  recoveries.
@@ -816,7 +823,7 @@ etichY  <-  names(wkDF2)[-c(1)]
 names(etichY) <-  etichY
 
 myTB2 <- tidyr::gather(wkDF2, key = "id",
-                       value = "profile",etichY)
+                       value = "profile",all_of(etichY))
 myTB2 <- dplyr::mutate(myTB2, position = rep(1:length(etichY),
                                              each=nrow(wkDF2)))
 
@@ -870,33 +877,67 @@ if(params$indiType == "lowBest"){
                                          ifelse(df2$change==-1, "+1 cluster", "+2 clusters or more"))))
 }
 
-write.csv(df2, "member_states_cluster.csv", row.names = F)
-msdf <- read.csv("member_states_cluster.csv")
-#get rid of columns not needed
-msdf<-msdf[,-c(2:4)]
-names(msdf)[2]<-paste("Cluster in year ",time_0,sep="")
-names(msdf)[3]<-paste("Cluster in year ",time_t,sep="")
-names(msdf)[4]<-"Change"
-
-ftab <- autofit(flextable(head(msdf,20))) 
-# ftab <- delete_part(ftab, part = "header")
-# ftab <- (ftab, values = c("ID", as.character(miniT), as.character(maxiT), "change", "label_t_0", "label_t_0", "label_change"))
-ftab <- theme_vanilla(ftab) 
-
-ftab <- footnote(ftab,i = 1, j=1, part = 'header', value = as_paragraph(c("Please refer to member_states_cluster.csv file for the complete dataset")), ref_symbols = "*") %>% width(., width = 1)
-
-save_as_image(ftab,path = "memtab.png", zoom = 9, webshot = "webshot2")
+write.csv(df2, "regions_cluster.csv", row.names = F)
+msdf <- read.csv("regions_cluster.csv")
+# #get rid of columns not needed
+# msdf<-msdf[,-c(2:4)]
+# names(msdf)[2]<-paste("Cluster in year ",time_0,sep="")
+# names(msdf)[3]<-paste("Cluster in year ",time_t,sep="")
+# names(msdf)[4]<-"Change"
+# 
+# ftab <- autofit(flextable(head(msdf,20))) 
+# # ftab <- delete_part(ftab, part = "header")
+# # ftab <- (ftab, values = c("ID", as.character(miniT), as.character(maxiT), "change", "label_t_0", "label_t_0", "label_change"))
+# ftab <- theme_vanilla(ftab) 
+# 
+# ftab <- footnote(ftab,i = 1, j=1, part = 'header', value = as_paragraph(c("Please refer to regions_cluster.csv file for the complete dataset")), ref_symbols = "*") %>% width(., width = 1)
+# 
+# save_as_image(ftab,path = "memtab.png", zoom = 9, webshot = "webshot2")
 # DT::datatable(df2, rownames = F)
 ```
 
-```{r,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
-tab <- "memtab.png"
-include_graphics(tab)
+Regions where change is -2 clusters:
+```{r,echo=FALSE} 
+# tab <- "memtab.png"
+# include_graphics(tab)
+msdf %>% 
+  filter(label_change== "-2 cluster") %>%
+  .[1] %>%
+  c()
+
 ```
 
 
+Regions where change is -2 clusters:
 
+```{r,echo=FALSE} 
+msdf %>% 
+  filter(label_change== "+2 cluster") %>%
+  .[1] %>%
+  c()
 
+```
+
+Regions where change is -1 clusters:
+
+```{r,echo=FALSE} 
+msdf %>% 
+  filter(label_change== "+1 cluster") %>%
+  .[1] %>%
+  c()
+
+```
+
+Regions where change is -1 clusters:
+
+```{r,echo=FALSE} 
+msdf %>% 
+  filter(label_change== "-1 cluster") %>%
+  .[1] %>%
+  c()
+
+```
+* the full table with region clusters is in the fiche folder
 
 <br><br>
 
@@ -957,7 +998,7 @@ head{
  
 <img src="eurofound.jpg" width=50px height=40px>
 <br> 
-```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6}
+```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6, fig.height=10}
 estrattore <- as.logical((wkDF2[,timeName] >= ptime_0) &  (wkDF2[,timeName]<= ptime_t))
 estrattore_1_n <- as.logical((wkDF2[,timeName] == ptime_0) |  (wkDF2[,timeName]== ptime_t))
 
@@ -1861,8 +1902,11 @@ if(length(color_ind60) != 0){
 }
 flx2 <- bold(flx2, bold = TRUE, part = "all")
 
+##flextable::save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
+
+#04/08/2023
 save_as_html(flx2,path="flx2.html")
-webshot2::webshot("flx2.html", file="flextab.png")
+webshot2::webshot("flx2.html", file="flextab.png") #left, top, width, and height
 
 # tabeHTMLfinal <- tabe_tot(workMatSco2, 
 #                           first_last_years = paste(ptime_0,"/", ptime_t,sep=""))# "First/Last")
@@ -1875,7 +1919,7 @@ webshot2::webshot("flx2.html", file="flextab.png")
 
 
  
-```{r,echo=FALSE,fig.width=6,fig.height=5, dpi=500} 
+```{r dpi=500, include=FALSE}
 flxtab <- "flextab.png"
 include_graphics(flxtab)
 ```
@@ -1929,7 +1973,307 @@ Legend:
   * solid blue lines: EU average  
 
 
+```{r,echo=FALSE}
 
+#----------MAPS------------------------------------------------------------
+miniT <- min(wkDF2[,timeName])
+maxiT <- max(wkDF2[,timeName])
+breaks_x <- unlist(unique(wkDF2[,timeName]))
+etichY  <-  names(wkDF2)[-c(1)]
+names(etichY) <-  etichY
+myTB2 <- tidyr::gather(wkDF2, key = "id",
+                       value = "profile",etichY)
+myTB2 <- dplyr::mutate(myTB2, position = rep(1:length(etichY),
+                                             each=nrow(wkDF2)))
+## change
+myTB3 <- tidyr::gather(wkDF2, key = "id",
+                       value = "profile",etichY)
+myTB3$profile <- as.numeric(myTB3$profile)
+myTB4 <- myTB3 %>% group_by(time) %>% 
+  mutate(Cluster = ntile(profile, 5))
+# df <- myTB4 %>% filter( time %in% c(maxiT,miniT))
+df2 <- myTB4 %>% select(time, id, Cluster) %>% spread(time, Cluster)
+df2 <- df2[,c(1,2,ncol(df2))]
+#calculate change between time t0 and time t1
+df2$change <- df2[3]-df2[2]
+names(df2)[4]<-"change" #not sure why I can't change the column name
+
+##this is for highBest
+df2$label_t_0<-NA
+df2$label_t_0<-ifelse(df2[as.character(miniT)]==1,"Cluster 1 (lagging behind)",
+                        ifelse(df2[as.character(miniT)]==2,"Cluster 2",
+                               ifelse(df2[as.character(miniT)]==3, "Cluster 3",
+                                      ifelse(df2[as.character(miniT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
+
+df2$label_t_1<-NA
+df2$label_t_1<-ifelse(df2[as.character(maxiT)]==1,"Cluster 1 (lagging behind)",
+                        ifelse(df2[as.character(maxiT)]==2,"Cluster 2",
+                               ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
+                                      ifelse(df2[as.character(maxiT)]==4,"Cluster 4", "Cluster 5 (top performer)"))))
+
+df2$label_change<-NA
+df2$label_change<-ifelse(df2$change<=-2,"-2 clusters or more",
+                           ifelse(df2$change==-1,"-1 cluster",
+                                  ifelse(df2$change==0, "remained the same",
+                                         ifelse(df2$change==1,"+1 cluster", "+2 clusters or more"))))
+if (params$indiType=="lowBest"){
+  
+df2$label_t_0<-NA
+df2$label_t_0<-ifelse(df2[as.character(miniT)]==5,"Cluster 1 (lagging behind)",
+                        ifelse(df2[as.character(miniT)]==4,"Cluster 2",
+                               ifelse(df2[as.character(miniT)]==3, "Cluster 3",
+                                      ifelse(df2[as.character(miniT)]==2,"Cluster 4", "Cluster 5 (top performer)"))))
+
+df2$label_t_1<-NA
+df2$label_t_1<-ifelse(df2[as.character(maxiT)]==5,"Cluster 1 (lagging behind)",
+                        ifelse(df2[as.character(maxiT)]==4,"Cluster 2",
+                               ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
+                                      ifelse(df2[as.character(maxiT)]==2,"Cluster 4", "Cluster 5 (top performer)"))))
+# df2$label_t_0<-NA
+# df2$label_t_0<-ifelse(df2[as.character(miniT)]==1,"Cluster 5 (top performer)",
+#                         ifelse(df2[as.character(miniT)]==2,"Cluster 4",
+#                                ifelse(df2[as.character(miniT)]==3, "Cluster 3",
+#                                       ifelse(df2[as.character(miniT)]==4,"Cluster 2", "Cluster 1 (lagging behind)"))))
+#   df2$label_t_1<-NA
+#   df2$label_t_1<-ifelse(df2[as.character(maxiT)]==1,"Cluster 5 (top performer)",
+#                         ifelse(df2[as.character(maxiT)]==2,"Cluster 4",
+#                                ifelse(df2[as.character(maxiT)]==3, "Cluster 3",
+#                                       ifelse(df2[as.character(maxiT)]==4,"Cluster 2", "Cluster 1 (lagging behind)"))))
+  df2$label_change<-NA
+  df2$label_change<-ifelse(df2$change<=-2,"+2 clusters or more",
+                           ifelse(df2$change==-1,"+1 cluster",
+                                  ifelse(df2$change==0, "remained the same",
+                                         ifelse(df2$change==1,"-1 cluster", "-2 clusters or more"))))
+}
+
+
+geodata_countries <- get_eurostat_geospatial(output_class = "sf", 
+                                             resolution = "60", 
+                                             nuts_level = "2", 
+                                             year = "2021", make_valid = FALSE)  ##n get_eurostat_geospatial(output_class = "sf", resolution = "10",  :
+##   Default of 'make_valid' for 'output_class="sf"' will be changed in the future (see function details).
+map_data<- inner_join(geodata_countries, df2,by="id")
+#
+map_data$label_change<-factor(map_data$label_change,
+                              levels=c("-2 clusters or more",
+                                       "-1 cluster",
+                                       "remained the same",
+                                       "+1 cluster",
+                                       "+2 clusters or more"))
+```
+
+
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
+factpal <- colorFactor("RdYlGn", map_data$label_t_0)
+
+tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 40%;
+    text-align: center;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,0.75);
+    font-weight: bold;
+    font-size: 28px;
+  }
+"))
+
+title <- tags$div(
+  tag.map.title, HTML("Indicator value in ", paste(ptime_0))
+)
+
+  
+#===========MAP_t_0==================================
+map_t_0 <- leaflet(map_data) %>%
+  #addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fill=TRUE,
+              fillColor = ~factpal(label_t_0),
+              fillOpacity = 0.8,
+              opacity=0.1,
+              color = "black",
+              label= paste(map_data$CNTR_CODE,map_data$label_t_0, sep=" "),
+              weight = 1,
+              stroke = TRUE,
+              highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
+	      addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
+  setView(10,56.8, zoom=3.5) %>%  #set view on EU
+  setMapWidgetStyle(list(background= "white"))%>%
+  addLegend(position = c("topleft"),
+            pal=factpal,
+            values=map_data$label_t_0,
+            na.label = "NA",
+            opacity = 0.5,
+            labFormat = labelFormat(),
+            className = "info legend",
+  ) %>%
+  addControl(title, position = "topleft", className="map-title")
+
+out_packed_list$map_t_0 <- map_t_0
+  
+## save html to png
+saveWidget(map_t_0, "temp0.html", selfcontained = FALSE)
+webshot("temp0.html", file = "map_t_0.png",
+        cliprect = "viewport")
+  
+
+out_packed_list$map_t_0 <- map_t_0
+
+```
+
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+map0 <- "map_t_0.png"
+# include_graphics(map0)
+```
+
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
+
+tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 40%;
+    text-align: center;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,0.75);
+    font-weight: bold;
+    font-size: 28px;
+  }
+"))
+
+title <- tags$div(
+  tag.map.title, HTML("Indicator value in ", paste(ptime_t))
+)
+
+#===========MAP_t_1==================================
+  factpal1 <- colorFactor("RdYlGn", map_data$label_t_1)
+  
+  map_t_1<-leaflet(map_data) %>% 
+    #addProviderTiles("CartoDB.Positron") %>%
+    addPolygons(fill=TRUE,
+                fillColor = ~factpal1(label_t_1),
+                fillOpacity = 0.8, 
+                opacity=0.1, 
+                color = "black",
+                label= paste(map_data$CNTR_CODE,map_data$label_t_1,sep=" "),
+                weight = 1,
+                stroke = TRUE,
+                highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
+    addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
+  setView(10,56.8, zoom=3.5) %>%  #set view on EU
+    setMapWidgetStyle(list(background= "white")) %>%
+    addLegend(position = c("topleft"),
+              pal=factpal1,
+              values=map_data$label_t_1,
+              na.label = "NA",
+              opacity = 0.5,
+              labFormat = labelFormat(),
+              className = "info legend",
+    ) %>%
+    addControl(title, position = "topleft", className="map-title")
+  
+  
+out_packed_list$map_t_1 <- map_t_1
+  
+#map_t_1
+## save html to png
+saveWidget(map_t_1, "temp1.html", selfcontained = FALSE)
+webshot("temp1.html", file = "map_t_1.png",
+        cliprect = "viewport")
+
+```
+
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+map1 <- "map_t_1.png"
+# include_graphics(map1)
+```
+
+
+<br>
+<img src="eurofound.jpg" width=50px height=40px>
+<br>
+```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
+
+tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title { 
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 20%;
+    text-align: center;
+    padding-left: 10px; 
+    padding-right: 10px; 
+    background: rgba(255,255,255,0.75);
+    font-weight: bold;
+    font-size: 28px;
+  }
+"))
+
+title <- tags$div(
+  tag.map.title, HTML("Change: ",paste(ptime_t),"and",paste(ptime_0)))
+
+#===========MAP_change==================================
+#rgb(230, 97, 1)orange
+#rgb(253,184,99)light orange
+#ivory -ivory
+#rgb(146,197,222) light blue
+#rgb(53,132,172) darker blue - added
+
+palette_change <- colorFactor(palette=c(rgb(230,97,1, maxColorValue = 255), #red-orange
+                                        rgb(253,184,99, maxColorValue = 255), #light orange
+                                        rgb(255,255,240, maxColorValue = 255), #ivory
+                                        rgb(146,197,222, maxColorValue = 255), #lighter blue
+                                        rgb(53,132,172, maxColorValue = 255)), #darker blue
+                                        map_data$label_change)
+
+map_change<-leaflet(map_data) %>% 
+  #addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(fill=TRUE,
+              fillColor = ~palette_change(map_data$label_change),
+              fillOpacity = 0.8, 
+              opacity=0.1, 
+              color = "black" ,
+              label= paste(map_data$CNTR_CODE,map_data$label_change,sep=" "),
+              weight = 1,
+              stroke = TRUE,
+              highlight = highlightOptions(weight = 5,  color = "black", fillOpacity = 1,bringToFront = TRUE)) %>%
+  addTiles(urlTemplate = "", attribution = paste0("Shapefile source: \U00A9 Eurostat")) %>%
+  setView(10,56.8, zoom=3.5) %>%  #set view on EU
+  setMapWidgetStyle(list(background= "white")) %>%
+  addLegend(position = c("topleft"),
+            pal=palette_change,
+            values=map_data$label_change,
+            na.label = "NA",
+            opacity = 0.5,
+            labFormat = labelFormat(),
+            className = "info legend",
+  ) %>%
+  addControl(title, position = "topleft", className="map-title")
+
+## save html to png
+saveWidget(map_change, "temp2.html", selfcontained = FALSE)
+webshot("temp2.html", file = "map_change.png",
+        cliprect = "viewport")
+
+out_packed_list$map_change <- map_change
+#map_change
+```
+
+
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+map2 <- "map_change.png"
+# include_graphics(map2)
+```
+
+
+*These maps show the statistical values per region (NUTS2).  
  
  
  
