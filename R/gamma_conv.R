@@ -83,7 +83,7 @@ gamma_conv <- function(rawDat, ref=NA, last=NA, timeName = "time",printRanks=F){
   # select ref
   posizRef <- which(rawDat[,timeName] == ref)
   # go with the index
-  myDat <- dplyr::select(rawDat,-timeName)
+  myDat <- rawDat[, -which(names(rawDat) == timeName)]    ######dplyr::select(rawDat,-timeName)
   myMat <- t(as.matrix(myDat))# countries by times
   myRanghi <- apply(myMat,2, function(vetto){rank(vetto)})
   if(printRanks){

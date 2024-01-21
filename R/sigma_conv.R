@@ -80,7 +80,7 @@ sigma_conv <- function(tavDes, timeName = "time", time_0 = NA, time_t=NA){
           }
         }else{};
     # eliminate time variables
-    myDes2 <- dplyr::select(myDes1, -timeName)
+    myDes2 <- myDes1[, -which(names(myDes1) == timeName)] ####dplyr::select(myDes1, -timeName)
   }else{
     tmp <- convergEU_glb()$tmpl_out
     tmp$err <- "Error: declared time variable absent."

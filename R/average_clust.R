@@ -92,7 +92,7 @@ average_clust <- function(myTB, timeName = "time", cluster="EU27"){
   }else{
     MScorrente <-     names(myTB)[-posit]
   }
-  tmp2 <- dplyr::select(tmp,MScorrente)#tmp[,MScorrente]
+  tmp2 <- dplyr::select(tmp,all_of(MScorrente))#tmp[,MScorrente]
   media <- apply(tmp2,1,mean)
   ##myTB[,cluster] <- media
   myTB <- dplyr::mutate(myTB,!!cluster := media)

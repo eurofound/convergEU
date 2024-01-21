@@ -113,7 +113,8 @@ upDo_CoDi <- function(myTB,
  }
  # now they are properly sorted anyway
  # remove time and calculate
-  wTB <- dplyr::select(workTB, - .data[[timeName]])
+  time_posiz1<-which(names(workTB) == timeName)
+  wTB <- workTB[,-time_posiz1]   ###dplyr::select(workTB, - .data[[timeName]])
   averages <- apply(wTB,1,mean)
   aver_diffe <- averages[2] - averages[1]
   ## summarize dispersion

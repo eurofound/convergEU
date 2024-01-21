@@ -137,7 +137,7 @@ graph_departure <- function( myTB,
     etichY  <-  names(myTB)[-c(1,2,3,4,5)]
     names(etichY) <-  etichY
     myTB2 <- tidyr::gather(myTB[-c(2,3,4,5)], key = "MS",
-                           value = "profile",etichY)
+                           value = "profile",all_of(etichY))
     myTB2 <- dplyr::mutate(myTB2, position = rep(1:length(etichY),
                                              each=nrow(myTB)))
 
@@ -179,7 +179,7 @@ graph_departure <- function( myTB,
       ggplot2::scale_x_continuous(breaks = breaks_x,
                          labels = breaks_x) +
       ggplot2::xlab(axis_name_x) +
-      ggplot2::guides(fill = FALSE) +
+      ggplot2::guides(fill = "none") +
       # ggplot2::geom_text(data=myTB2,
       #                    ggplot2::aes(x = myTB2$`time`,
       #                                 y = myTB2$`position`,

@@ -105,7 +105,8 @@ delta_conv <- function(tavDes,
             return(obj_out)
           };
         # eliminate time variables
-        myDes2 <- dplyr::select(myDes1, -timeName)
+        
+        myDes2 <- myDes1[, -which(names(myDes1) == timeName)]
     }else{
         obj_out$err <- "Error: declared time variable absent."
         return(obj_out)

@@ -159,12 +159,12 @@ beta_conv <- function(tavDes,time_0, time_t, all_within=FALSE,
   };
   # now it it sure the reference is in the first row
   # Non negative values? Needed because log(indicator) taken
-  if( sum(dplyr::select(resTB, -timeName)  <= 0) > 0){
+  if( sum(resTB[,-which(names(resTB) == timeName)]  <= 0) > 0){    ###########dplyr::select(resTB, -timeName)  <= 0) > 0){
     obj_out$err  <- "Error: negative values in the indicator."
     return(obj_out)
   }
   # log-transform, already checked positivity
-  reslogTB <- log(dplyr::select(resTB, -timeName))
+  reslogTB <- log(resTB[,-which(names(resTB) == timeName)])    ##########dplyr::select(resTB, -timeName))
   ## wTB <- cbind(dplyr::select(resTB, timeName),reslogTB)
   ## Should we divide the ordinates by number of elapsed years? YES, possibly
   workTB <- dplyr::tibble(
