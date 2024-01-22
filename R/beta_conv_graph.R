@@ -45,7 +45,7 @@ beta_conv_graph <- function(betaRes,
   beta_conv_gr1 <- ggplot2::qplot(betaRes$res$workTB$indic,
                          betaRes$res$workTB$deltaIndic,
                          xlab= paste("log ",indiName),
-                         ylab= paste("Log growth:",ptime_0,"-",ptime_t)) +
+                         ylab= paste("Growth rate:",ptime_0,"-",ptime_t)) +
     ggplot2::geom_abline(intercept = as.numeric(betaRes$res$summary[1,2]),
                 slope = as.numeric(betaRes$res$summary[2,2]),
                 colour = "red") +
