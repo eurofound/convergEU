@@ -37,10 +37,18 @@ if(betaRes$res$beta1 > 0 && params$indiType == 'highBest'){
 } 
 
 lastRowAverages <- nrow(outMed)
+stars.pval <- function(x){
+   stars <- c("***", "**", "*", "n.s.")
+   var <- c(0, 0.01, 0.05, 0.10, 1)
+   i <- findInterval(x, var, left.open = T, rightmost.closed = T)
+   stars[i]
+}
+stars_pvalue<-paste0(paste(round(subset(betaRes$res$summary,betaRes$res$summary$term=="indic")$p.value,digits=5),"",stars.pval(subset(betaRes$res$summary,betaRes$res$summary$term=="indic")$p.value)[1]))
 
 out_packed_list$betaSummary <-  list(
   indicatorType= params$indiType,
   betaCoeff = betaRes$res$beta1,
+  p_value= stars_pvalue,
   diagnosis= diagnosis,
   startingYear = ptime_0,
   endingYear = ptime_t,
@@ -62,6 +70,8 @@ beta_conv_gr1 <- qplot(betaRes$res$workTB$indic,
             hjust=0, vjust=0,colour="blue")
 # export
 out_packed_list$beta_conv_gr1 <-  beta_conv_gr1
+
+
 
 # plot
 beta_conv_gr1
@@ -117,6 +127,8 @@ Beta summary list:
 * Indicator type: `r params$indiType`    
 <br>
 * Beta Coefficient: `r betaRes$res$beta1`  
+<br>
+* p value: `r stars_pvalue` 
 <br>
 * Change in average:    
   
