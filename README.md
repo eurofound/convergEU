@@ -1,3 +1,7 @@
+  <!-- badges: start -->
+  [![CRAN status](https://www.r-pkg.org/badges/version/convergEU)](https://cran.r-project.org/package=convergEU)
+<!-- badges: end -->
+
 ![](inst/logoConvergEU9_github.png)  
 
 # R package *convergEU*
