@@ -206,7 +206,7 @@ myG <- ggplot2::ggplot(myTB2,
   ggplot2::scale_x_continuous(breaks = breaks_x,
                      labels = breaks_x) +
   ggplot2::xlab(axis_name_x) +
-  ggplot2::guides(fill = FALSE) +
+  ggplot2::guides(fill = "none") +
   ggplot2::geom_text(data=myTB2,
                      ggplot2::aes(x = `time`,
                                   y = `position`,
