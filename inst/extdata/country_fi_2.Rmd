@@ -1712,7 +1712,8 @@ if(length(color_ind60) != 0){
 }
 flx2 <- bold(flx2, bold = TRUE, part = "all")
 
-save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
+save_as_html(flx2,path = "flextab.html")
+webshot2::webshot("./flextab.html",file="./flextab.png")
 
 
 # tabeHTMLfinal <- tabe_tot(workMatSco2, 
