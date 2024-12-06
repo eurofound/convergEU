@@ -82,7 +82,7 @@ go_indica_fi <-  function(
     return(obj_out)
   }
   #
-  EUst <- c('EU27', 'EU28', 'EU27_2019', 'EU27', 'EU25', 'EU19', 'EU12', 'EU15')
+  EUst <- c('EU27', 'EU28', 'EU27_2019', 'EU27', 'EU25', 'EA19', 'EU12', 'EU15')
   sourceFilecss <- system.file("extdata", "EUF.css", package = "convergEU")
   if(eige_layout){
      sourceFile1 <- system.file("extdata", "indica_fi_2_eige.Rmd", package = "convergEU")
