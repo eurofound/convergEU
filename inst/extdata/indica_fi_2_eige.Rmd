@@ -2061,16 +2061,10 @@ if(length(color_ind60) != 0){
 }
 flx2 <- bold(flx2, bold = TRUE, part = "all")
 
-save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
+#save_as_image(flx2,path = "flextab.png", zoom = 6, webshot = "webshot2")
+save_as_html(flx2,path="flx2.html")
+webshot2::webshot("flx2.html", file="flextab.png")
 
-
-# tabeHTMLfinal <- tabe_tot(workMatSco2, 
-#                           first_last_years = paste(ptime_0,"/", ptime_t,sep=""))# "First/Last")
-# 
-# out_packed_list$patterns <- list(css="<style>\n.vertical-text {\n\tdisplay: inline-block;\n\toverflow: hidden;\n\twidth: 1.3em;\n}\n.vertical-text__inner {\n\tdisplay: inline-block;\n\twhite-space: nowrap;\n\tline-height: 1.5;\n\ttransform: translate(0,100%) rotate(-90deg);\n\ttransform-origin: 0 0;\n}\n\n.vertical-text__inner:after {\n\tcontent: \"\";\n\tdisplay: block;\n\tmargin: -1.5em 0 100%;\n}\n\n\nbody {\n\tfont: 11px/1 Arial, sans-serif;\n}\n\ntable {\n\tmargin-top: 1em;\n}\nth,td {\n\tborder: 1px solid;\n\ttext-align:center;\n\tfont-weight: normal;\n\tpadding: 0.5em;\n}\nhead{\n   color: blue;\n}\n</style>",
-#      html=tabeHTMLfinal)
-# 
-# cat(tabeHTMLfinal)
 ```
 
 
