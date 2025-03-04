@@ -967,8 +967,8 @@ out_packed_list$map_t_0 <- map_t_0
   
 ## save html to png
 saveWidget(map_t_0, "temp0.html", selfcontained = FALSE)
-webshot::webshot("temp0.html", file = "map_t_0.png",
-        cliprect = "viewport")
+webshot2::webshot("temp0.html", file = "map_t_0.png",
+                  vwidth = 800, vheight = 850, cliprect = "viewport")
   
 
 out_packed_list$map_t_0 <- map_t_0
@@ -1036,8 +1036,8 @@ out_packed_list$map_t_1 <- map_t_1
 #map_t_1
 ## save html to png
 saveWidget(map_t_1, "temp1.html", selfcontained = FALSE)
-webshot::webshot("temp1.html", file = "map_t_1.png",
-        cliprect = "viewport")
+webshot2::webshot("temp1.html", file = "map_t_1.png",
+                  vwidth = 800, vheight = 850, cliprect = "viewport")
 
 ```
 
@@ -1109,8 +1109,8 @@ map_change<-leaflet(map_data) %>%
 
 ## save html to png
 saveWidget(map_change, "temp2.html", selfcontained = FALSE)
-webshot::webshot("temp2.html", file = "map_change.png",
-        cliprect = "viewport")
+webshot2::webshot("temp2.html", file = "map_change.png",
+                  vwidth = 800, vheight = 850, cliprect = "viewport")
 
 out_packed_list$map_change <- map_change
 #map_change
