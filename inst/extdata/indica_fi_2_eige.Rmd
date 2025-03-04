@@ -51,7 +51,7 @@ library(cowplot)
 library(png)
 library(htmltools)
 library(htmlwidgets)
-library(webshot)
+library(webshot2)
  
 knitr::opts_chunk$set(
   collapse = TRUE,
