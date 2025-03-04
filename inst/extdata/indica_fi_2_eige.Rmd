@@ -131,7 +131,8 @@ It gives more visibility to areas that need improvement and ultimately supports 
 The Index comprises six core domains (Work, Money, Knowledge, Time, Power, Health) and two additional domains (Violence against women, Intersecting inequalities).
 Progress of gender equality is mainly measured by analysing trends in $31$ indicators distributed across the six core domains of the Index.
 
-The Index uses a scale of 1 to 100, where 1 is for total inequality and 100 is for total equality. The scores are based on the gaps between women and men and levels of achievement in six core domains – work, money, knowledge, time, power and health – and their subdomains
+The Index uses a scale of 1 to 100, where 1 is for total inequality and 100 is for total equality. The scores are based on the gaps between women and men and levels of achievement in six core domains – work, money, knowledge, time, power and health – and their subdomains.
+In the case of indicators in the domain of power, the indicators are included as a share of women averaged over 3 years (for example the average women in parliaments for 2022, is calculated the average of 2021, 2022 and 2022).
 
 Gender gap of the Full-time equivalent (FTE) employment rate.
 The full-time equivalent (FTE) employment rate is a unit to measure employed persons in a way that makes them comparable even though they may work a different number of hours per week. The unit is obtained by comparing an employee's average number of hours worked to the average number of hours worked by a full-time worker. A full-time worker is therefore counted as one FTE, while a part-time worker gets a score in proportion to the hours she or he works. For example, a part-time worker employed for 20 hours a week where full-time work consists of 40 hours, is counted as 0.5 FTE.
