@@ -48,6 +48,7 @@ library(officer)
 library(magrittr)
 library(cowplot)
 library(png)
+library(webshot2)
  
 knitr::opts_chunk$set(
   collapse = TRUE,
