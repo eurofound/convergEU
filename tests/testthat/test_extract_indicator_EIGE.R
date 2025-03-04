@@ -8,19 +8,19 @@ context("Extraction of a indicator dataset from EIGE database.")
 test_that("Simple  extraction of METADATA", {
   myTB <- extract_indicator_EIGE (
     indicator_code = "METADATA", #Code_in_database
-    fromTime=2003,
-    toTime=2015)
+    fromTime=2017,
+    toTime=2022)
   # myTB
   expect_equal(myTB$res$`Worksheet.name`[1], "INDEX" )
-  expect_equal(ncol(myTB$res),12 ) # earlier set as equal to 7
+  expect_equal(ncol(myTB$res),11 ) # earlier set as equal to 7
 })
 
 
 test_that("Simple  extraction of types", {
   myTB <- extract_indicator_EIGE (
     indicator_code = "METADATA", #Code_in_database
-    fromTime=2003,
-    toTime=2015,
+    fromTime=2017,
+    toTime=2022,
     type_flag=TRUE)
   # myTB
   expect_equal(sum(is.na(myTB$res)),2 )
@@ -31,8 +31,8 @@ test_that("Simple  extraction of types", {
 test_that("Simple  extraction of types", {
   myTB <- extract_indicator_EIGE (
     indicator_code = "MINISTER", #Code_in_database
-    fromTime=2003,
-    toTime=2015,
+    fromTime=2017,
+    toTime=2022,
     type_flag=TRUE)
   # myTB
   expect_equal(myTB$res[1], "highBest")
@@ -84,10 +84,10 @@ test_that("Simple  extraction  indicator  WORK unavailable subset of years", {
 test_that("Simple  extraction  indicator  MINISTER less countries", {
   myTB <- extract_indicator_EIGE (
     indicator_code = "MINISTER", #Code_in_database
-    fromTime=2012,
-    toTime=2016,
+    fromTime=2017,
+    toTime=2022,
     c("IT","AT"))
   # myTB
-  expect_equal(dim(myTB$res)[1], 5 )
+  expect_equal(dim(myTB$res)[1], 6 )
 })
 
