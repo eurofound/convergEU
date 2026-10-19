@@ -6,8 +6,8 @@ output:
 params:
       dataNow: "4/08/2023"
       workingDF: 'n2'
-      time_0: 2007
-      time_t: 2021
+      time_0: 2013
+      time_t: 2024
       timeName: 'time'
       indiType: 'lowBest'
       indicaT: NA
@@ -19,10 +19,9 @@ params:
       outFile: "test_indica-fi-cust"
       outDir: "../tt-fish"
       pdf_out: TRUE
-      workTB: !r emp_20_64_MS
-      memStates: 'NUTS2'
+      workTB: !r n2
+      memStates: 'NUTS2_2021'
 ---
- 
 
 ```{r setup, include=FALSE,eval=TRUE}
 
@@ -66,19 +65,32 @@ knitr::opts_chunk$set(
   warning = FALSE,
   eval=TRUE
 )
-```
 
+ quintile_ties <- function(x, n = 5, tie_rule = min) {
+  g <- dplyr::ntile(x, n)
+  ok <- !is.na(x)
+  g[ok] <- stats::ave(g[ok], x[ok], FUN = tie_rule)   # tied values share one group
+  g
+ }
+#  Identical to current output when there are no ties, so published fiches still reproduce in the normal case.
+# Group codes always stay within 1 to 5, so labels, the lowBest recoding and the change map keep working. With massive ties a group can end up empty.
+# The tie direction is an explicit argument (min = pessimistic, max = optimistic).
 
+tie_rule_fiche <- if (params$indiType == "highBest") min else max 
+# tie_rule only matters when a set of tied regions straddles a quintile boundary. ntile() breaks ties by position, so some of the tied regions land in group k and the rest in k+1. quintile_ties() then pulls them all into one group:
+# 
+# tie_rule = min puts the whole tied set in the lower group (k).
+# tie_rule = max puts the whole tied set in the upper group (k+1).
  
-
+```
 
 ```{r chunk1,eval=F}
 
 # input parameters
 params <- list()
 params$dataNow <- Sys.Date()
-params$time_0 <- 2008
-params$time_t <- 2018
+params$time_0 <- 2013
+params$time_t <- 2021
 params$timeName  <- 'time'
 params$workingDF  <- 'n2'
 params$indicaT <- 'n2'
@@ -92,19 +104,13 @@ params$outFile <- "test_indica-fi-cust"
 # params$outDir <-
 params$outDir <-   "../tt-fish"
 params$pdf_out <- TRUE
-params$workTB <- emp_20_64_MS
-params$memStates <- 'NUTS2'
+params$workTB <- !r n2
+params$memStates <- 'NUTS2_2021'
 ```
 
+<br> <!-- center --> <img src="eurofound.jpg" width="248px" height="163px"/> <!-- /center --> <br><br>
 
-
-
-<br>
-<!-- center -->
-<img src="eurofound.jpg" width=248px height=163px>
-<!-- /center -->
-<br><br>
-
+```{=html}
 <!--
 <style  type="text/css">
 body {
@@ -112,29 +118,24 @@ body {
 }
 </style
 -->
+```
 
-
-# Indicator  Fiche     
+# Indicator Fiche
 
 This fiche shows the investigation of upward convergence of Member States in the selected indicator using the methodological framework of Eurofound (2018). Where upward convergence is the process in which Member States improve their performance in relation to a particular outcome or policy objective together with a decrease in disparities among them. From a methodological point of view, there is no single measure capable of capturing all the relevant aspects of the convergence, it is therefore essential to consider more than one measure in order to obtain a more comprehensive idea of the convergence dynamics.
 
 <br>
 
-### Fiche info 
+### Fiche info
 
-   
-Today: `r params$dataNow`     
-R Package: <a href='https://cran.r-project.org/package=convergEU'> **convergEU** </a>  
-Indicator: *`r params$indicaT`*  
-Indicator type: *`r params$indiType`*  
-Measures of convergence: *`r if(is.null(params$seleMeasure)){"none"}else{params$seleMeasure}`*   
-Aggregation: *`r params$seleAggre`*    
-Time window: *`r  params$timeName`*  from *`r as.numeric(params$time_0)`*  to *`r as.numeric(params$time_t)`*  
-Author: *`r params$auth`* 
-
-   
-   
-    
+Today: `r params$dataNow`\
+R Package: <a href='https://cran.r-project.org/package=convergEU'> **convergEU** </a>\
+Indicator: *`r params$indicaT`*\
+Indicator type: *`r params$indiType`*\
+Measures of convergence: *`r if(is.null(params$seleMeasure)){"none"}else{params$seleMeasure}`*\
+Aggregation: *`r params$seleAggre`*\
+Time window: *`r  params$timeName`* from *`r as.numeric(params$time_0)`* to *`r as.numeric(params$time_t)`*\
+Author: *`r params$auth`*
 
 ```{r chunk2,echo=F,eval=T}
 # to save into a out-file
@@ -228,22 +229,11 @@ outMed <- average_clust(wkDF2, timeName = params$timeName,
 ## 2019-12-12 moved here
 lastRowAverages <- nrow(outMed)
 ```
-  
-  
-  
+
 ```{r chunk3,eval=FALSE}
 print(out_packed_name)
 ```
 
-
-  
- 
- 
- 
- 
- 
- 
- 
 ```{r sigmaconvCalculations,echo = FALSE}
 ##
 ##
@@ -311,9 +301,6 @@ if(dichia_con_CV$res$declaration_strict != "none"){
 
 ```
 
-
-
-
 ```{r overallSigmaConvergence,echo=FALSE}
 # overall sigma convergence
 diffeSTDdev <- as.numeric(sigCores$res[lastRowAverages,'stdDev'])-as.numeric(sigCores$res[1,'stdDev'])
@@ -335,27 +322,18 @@ if(diffeCV < 0){
 
 label_sigma_joint<- paste("Standard Deviation: ",label_sigmaSTDdev,"; CV: ",label_sigmaCV)
 
-```    
+```
 
-  
-
-
-
-
- 
- 
- 
- 
 <br><br>
 
-###  Time series overview of EU countries
+### Time series overview of EU countries
 
-The graph shows the times series trend of each Member State giving an idea of the development of the countries across time. 
+The graph shows the times series trend of each Member State giving an idea of the development of the countries across time.
 
 <br>
 
-<img src="eurofound.jpg" width=50px height=40px>
-<br> 
+<img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r fig.width=6,fig.height=5}
 colMS <- setdiff(names(wkDF2),timeName)
 
@@ -382,20 +360,15 @@ out_packed_list$allEUms$mGallEU <- mGallEU
 
 mGallEU
 ```
- 
- 
- 
- 
 
 <br><br>
 
-###  Time series summary of EU countries 
+### Time series summary of EU countries
 
- The graph gives an overview of the development in some basic descriptive statistics: unweighted average, median, the minimum and the maximum value in each year.
+The graph gives an overview of the development in some basic descriptive statistics: unweighted average, median, the minimum and the maximum value in each year.
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br> 
+<br> <img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r fig.width=6,fig.height=5}
 colMS <- setdiff(names(wkDF2),timeName)
 
@@ -507,23 +480,16 @@ out_packed_list$allEUms$mGallSummary <-  mGallSummary
 mGallSummary
 ```
 
+<br>
 
-<br> 
- 
- 
- 
- 
- 
- 
- 
 <br><br>
 
-###  Boxplots of EU countries over time
+### Boxplots of EU countries over time
 
-The graph gives an overall idea of the dispersion and some descriptive statistics of the Member States in each year. 
+The graph gives an overall idea of the dispersion and some descriptive statistics of the Member States in each year.
 
-<img src="eurofound.jpg" width=50px height=40px>
-<br> 
+<img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r fig.width=6}
 wkDF3 <- tidyr::gather(wkDF2, key= "Country",value="Indicator",colMS)
     
@@ -547,33 +513,17 @@ out_packed_list$condiBP <-  condiBP
 
 condiBP
 ```
- 
+
+<br><br> <img src="legend.png"/>
 
 <br><br>
-<img src="legend.png"> 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-<br><br>
 
-###  Unweighted average by year over selected countries
+### Unweighted average by year over selected countries
 
-The graph presents the unweighted average calculated on the aggregation of Member States selected. Below the graph there are initial and final year values and the overall change in the period.
-The overall change can be upward or downward depending on the objective direction of the indicator and its interpretation.
+The graph presents the unweighted average calculated on the aggregation of Member States selected. Below the graph there are initial and final year values and the overall change in the period. The overall change can be upward or downward depending on the objective direction of the indicator and its interpretation.
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
+<br> <img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r,echo=FALSE,fig.width=6}
 
 cluster_mean_gr2 <- qplot(
@@ -597,7 +547,7 @@ out_packed_list$cluster_mean_gr2 <-  cluster_mean_gr2
 #plot
 cluster_mean_gr2
 ```
- 
+
 ```{r,echo=FALSE}
 
 diffeAve <- as.numeric(outMed[lastRowAverages,aggregation]) - 
@@ -621,43 +571,24 @@ if( (diffeAve > 0 )  &  (params$indiType =="lowBest")){
 
 ```
 
+-   Change in average:
 
+    -   Year `r ptime_0`, average: `r as.numeric(outMed[1,aggregation])`\
+    -   Year `r ptime_t`, average: `r as.numeric(outMed[lastRowAverages,aggregation])`\
+    -   Difference $\Delta$ between years: `r  diffeAve`\
+        <br>
 
-  * Change in average:    
-  
-      + Year `r ptime_0`, average:  `r as.numeric(outMed[1,aggregation])`   
-      + Year `r ptime_t`, average:  `r as.numeric(outMed[lastRowAverages,aggregation])`         
-      + Difference $\Delta$ between years: `r  diffeAve`    
-   <br> 
-  * Overall result (interpretation): **`r   labelAveDelta`**      
- <br>    
-  * Regions where mean increased in year `r ptime_t` with respect  to year   `r ptime_0`:   
-  
-      + `r  paste(sort(dichia_con_stddev$res$declaration_split$names_incre),collapse="; ")`   
-      
-  * Regions where mean decreased in year `r ptime_t` with respect  to year   `r ptime_0`:    
-  
-      + `r  paste(sort(dichia_con_stddev$res$declaration_split$names_decre),collapse="; ")`   
+-   Overall result (interpretation): **`r   labelAveDelta`**\
+    <br>\
 
+-   Regions where mean increased in year `r ptime_t` with respect to year `r ptime_0`:
 
- 
+    -   `r  paste(sort(dichia_con_stddev$res$declaration_split$names_incre),collapse="; ")`
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+-   Regions where mean decreased in year `r ptime_t` with respect to year `r ptime_0`:
+
+    -   `r  paste(sort(dichia_con_stddev$res$declaration_split$names_decre),collapse="; ")`
+
 ```{r,echo=FALSE,eval=TRUE}
 # Pre-processing for beta convergence when null or negative values 
 #     are present 
@@ -675,13 +606,11 @@ if(nega_val & semaforo[["beta"]] ){
   semaforo[["beta"]] <- FALSE
 }
  
-```  
+```
 
 ```{r,echo=FALSE,eval=FALSE}
 semaforo
 ```
- 
-  
 
 ```{r,echo=FALSE,results='asis', fig.width=6,fig.height=5}
 if(semaforo[["nega_val_indi"]]){
@@ -697,26 +626,12 @@ if(semaforo[["beta"]]){
 }
 ```
 
- 
-
-          
-
-            
-
-
-
-        
-
 ```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["sigma"]]){
   cat(knitr::asis_output(knitr::knit_child("indica_fi_2_sigma.Rmd", 
                                            quiet=TRUE, envir=environment())))
 }
 ```
-            
-            
- 
-
 
 ```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["delta"]]){
@@ -724,14 +639,6 @@ if(semaforo[["delta"]]){
                                            quiet=TRUE, envir=environment())))
 }
 ```
-    
-
-
- 
-
-
-
-
 
 ```{r,echo=FALSE,results='asis',eval=TRUE, fig.width=6,fig.height=5}
 if(semaforo[["gamma"]]){
@@ -740,79 +647,57 @@ if(semaforo[["gamma"]]){
 }
 ```
 
- 
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<br><br> 
+<br><br>
 
 ## Regions dynamics
 
+The dynamics of regions show the differences in the situation of single regions which can be hidden under the use of a single indicator. Understanding the dynamics is also necessary to better identify possible drivers of convergence and divergence as well as structural deficiencies or sustainable recoveries.
 
-The dynamics of regions show the differences in the situation of single
- regions which can be hidden under the use of a single indicator.
-Understanding the dynamics is also necessary to better identify possible drivers
- of convergence and divergence as well as structural deficiencies or sustainable
- recoveries.
+<br><br>
 
-<br><br> 
+```{=html}
 <style>
 .vertical-text {
-	display: inline-block;
-	overflow: hidden;
-	width: 1.3em;
+    display: inline-block;
+    overflow: hidden;
+    width: 1.3em;
 }
 .vertical-text__inner {
-	display: inline-block;
-	white-space: nowrap;
-	line-height: 1.5;
-	transform: translate(0,100%) rotate(-90deg);
-	transform-origin: 0 0;
+    display: inline-block;
+    white-space: nowrap;
+    line-height: 1.5;
+    transform: translate(0,100%) rotate(-90deg);
+    transform-origin: 0 0;
 }
 /* This element stretches the parent to be square
    by using the mechanics of vertical margins  */
 .vertical-text__inner:after {
-	content: "";
-	display: block;
-	margin: -1.5em 0 100%;
+    content: "";
+    display: block;
+    margin: -1.5em 0 100%;
 }
 
 
 body {
-	font: 11px/1 Arial, sans-serif;
+    font: 11px/1 Arial, sans-serif;
 }
 
 table {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 th,td {
-	border: 1px solid;
-	text-align:center;
-	font-weight: normal;
-	padding: 0.5em;
+    border: 1px solid;
+    text-align:center;
+    font-weight: normal;
+    padding: 0.5em;
 }
 head{
    color: blue;
 }
 </style>
+```
 
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
-
+<img src="eurofound.jpg" width="50px" height="40px"/> <br>
 
 ```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6}
 
@@ -897,7 +782,8 @@ msdf <- read.csv("regions_cluster.csv")
 ```
 
 Regions where change is -2 clusters:
-```{r,echo=FALSE} 
+
+```{r,echo=FALSE}
 # tab <- "memtab.png"
 # include_graphics(tab)
 msdf %>% 
@@ -907,10 +793,9 @@ msdf %>%
 
 ```
 
-
 Regions where change is -2 clusters:
 
-```{r,echo=FALSE} 
+```{r,echo=FALSE}
 msdf %>% 
   filter(label_change== "+2 cluster") %>%
   .[1] %>%
@@ -920,7 +805,7 @@ msdf %>%
 
 Regions where change is -1 clusters:
 
-```{r,echo=FALSE} 
+```{r,echo=FALSE}
 msdf %>% 
   filter(label_change== "+1 cluster") %>%
   .[1] %>%
@@ -930,74 +815,66 @@ msdf %>%
 
 Regions where change is -1 clusters:
 
-```{r,echo=FALSE} 
+```{r,echo=FALSE}
 msdf %>% 
   filter(label_change== "-1 cluster") %>%
   .[1] %>%
   c()
 
 ```
-* the full table with region clusters is in the fiche folder
+
+-   the full table with region clusters is in the fiche folder
 
 <br><br>
 
-#### Convergence and divergence patterns 
+#### Convergence and divergence patterns
 
+The table represents convergence patterns of the 'aggregation' countries in the chosen time frame. The values in the table refer to the patterns shown in the graphical legend below.
 
-
-The table represents  convergence patterns of the 'aggregation' countries
- in the chosen time frame. The values in the table refer to the patterns shown in the
- graphical legend below.
-
-
-
- 
-
+```{=html}
 <style>
 .vertical-text {
-	display: inline-block;
-	overflow: hidden;
-	width: 1.3em;
+    display: inline-block;
+    overflow: hidden;
+    width: 1.3em;
 }
 .vertical-text__inner {
-	display: inline-block;
-	white-space: nowrap;
-	line-height: 1.5;
-	transform: translate(0,100%) rotate(-90deg);
-	transform-origin: 0 0;
+    display: inline-block;
+    white-space: nowrap;
+    line-height: 1.5;
+    transform: translate(0,100%) rotate(-90deg);
+    transform-origin: 0 0;
 }
 /* This element stretches the parent to be square
    by using the mechanics of vertical margins  */
 .vertical-text__inner:after {
-	content: "";
-	display: block;
-	margin: -1.5em 0 100%;
+    content: "";
+    display: block;
+    margin: -1.5em 0 100%;
 }
 
 
 body {
-	font: 11px/1 Arial, sans-serif;
+    font: 11px/1 Arial, sans-serif;
 }
 
 table {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 th,td {
-	border: 1px solid;
-	text-align:center;
-	font-weight: normal;
-	padding: 0.5em;
+    border: 1px solid;
+    text-align:center;
+    font-weight: normal;
+    padding: 0.5em;
 }
 head{
    color: blue;
 }
 </style>
+```
 
+<img src="eurofound.jpg" width="50px" height="40px"/> <br>
 
- 
- 
-<img src="eurofound.jpg" width=50px height=40px>
-<br> 
 ```{r,echo=FALSE,results='hide',fig.keep='all',fig.width=6, fig.height=10}
 estrattore <- as.logical((wkDF2[,timeName] >= ptime_0) &  (wkDF2[,timeName]<= ptime_t))
 estrattore_1_n <- as.logical((wkDF2[,timeName] == ptime_0) |  (wkDF2[,timeName]== ptime_t))
@@ -1687,7 +1564,7 @@ if(length(color_ind41) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind41[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind41[i, 1], 
-                           j = color_ind1[i, 2],
+                           j = color_ind41[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("1"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
@@ -1720,7 +1597,7 @@ if(length(color_ind44) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind44[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind44[i, 1], 
-                           j = color_ind4[i, 2],
+                           j = color_ind44[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("4"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
@@ -1917,28 +1794,18 @@ webshot2::webshot("flx2.html", file="flextab.png") #left, top, width, and height
 # cat(tabeHTMLfinal)
 ```
 
-
- 
 ```{r dpi=500, include=FALSE}
 flxtab <- "flextab.png"
 include_graphics(flxtab)
 ```
- 
- 
- 
- 
- 
 
-<br>
-Legend:    
+<br> Legend:
 
- * Indicator type: `r params$indiType`   
- * solid black lines: Member States   
- * solid blue lines: EU average   
- 
+-   Indicator type: `r params$indiType`\
+-   solid black lines: Member States\
+-   solid blue lines: EU average
 
-
-```{r legend1,echo=FALSE,out.width="60%"} 
+```{r legend1,echo=FALSE,out.width="60%"}
 conv <- "gg_patt_conv_annotated.png"
 # p1 <- readPNG(conv, native = T, info = T)
 include_graphics(conv)
@@ -1946,7 +1813,7 @@ include_graphics(conv)
 
 <br><br>
 
-```{r legend2,echo=FALSE,out.width="60%"} 
+```{r legend2,echo=FALSE,out.width="60%"}
 
 div <- "gg_patt_div_annotated.png"
 # p2 <- readPNG(div, native = T, info = T)
@@ -1955,23 +1822,21 @@ include_graphics(div)
 
 <br><br>
 
-```{r legend3,echo=FALSE,out.width="60%"} 
+```{r legend3,echo=FALSE,out.width="60%"}
 sam <- "gg_patt_same_annotated.png"
 # p3 <- readPNG(sam, native = T, info = T)
 include_graphics(sam)
-```  
-
+```
 
 <!--**Note:** 21 is none of the previous patterns and requires visual inspection.-->
 
 <br>
- 
-Legend:     
 
-  * Indicator type: `r params$indiType`   
-  * solid black lines: Member States   
-  * solid blue lines: EU average  
+Legend:
 
+-   Indicator type: `r params$indiType`\
+-   solid black lines: Member States\
+-   solid blue lines: EU average
 
 ```{r,echo=FALSE}
 
@@ -1989,8 +1854,14 @@ myTB2 <- dplyr::mutate(myTB2, position = rep(1:length(etichY),
 myTB3 <- tidyr::gather(wkDF2, key = "id",
                        value = "profile",etichY)
 myTB3$profile <- as.numeric(myTB3$profile)
+
+ntile_5 <- function(x){
+  quintile_ties(x, 5,tie_rule = tie_rule_fiche)
+}
+
 myTB4 <- myTB3 %>% group_by(time) %>% 
-  mutate(Cluster = ntile(profile, 5))
+  mutate(Cluster = ntile_5(profile))
+
 # df <- myTB4 %>% filter( time %in% c(maxiT,miniT))
 df2 <- myTB4 %>% select(time, id, Cluster) %>% spread(time, Cluster)
 df2 <- df2[,c(1,2,ncol(df2))]
@@ -2062,10 +1933,8 @@ map_data$label_change<-factor(map_data$label_change,
                                        "+2 clusters or more"))
 ```
 
+<br> <img src="eurofound.jpg" width="50px" height="40px"/> <br>
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
 ```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 factpal <- colorFactor("RdYlGn", map_data$label_t_0)
 
@@ -2125,14 +1994,13 @@ out_packed_list$map_t_0 <- map_t_0
 
 ```
 
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 map0 <- "map_t_0.png"
 # include_graphics(map0)
 ```
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
+<br> <img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 
 tag.map.title <- tags$style(HTML("
@@ -2191,15 +2059,13 @@ webshot("temp1.html", file = "map_t_1.png",
 
 ```
 
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 map1 <- "map_t_1.png"
 # include_graphics(map1)
 ```
 
+<br> <img src="eurofound.jpg" width="50px" height="40px"/> <br>
 
-<br>
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
 ```{r,echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 
 tag.map.title <- tags$style(HTML("
@@ -2266,46 +2132,26 @@ out_packed_list$map_change <- map_change
 #map_change
 ```
 
-
-```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"} 
+```{r echo=FALSE,fig.width=5,fig.height=5, out.width="90%"}
 map2 <- "map_change.png"
 # include_graphics(map2)
 ```
 
+\*These maps show the statistical values per region (NUTS2).
 
-*These maps show the statistical values per region (NUTS2).  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 <br><br>
 
-### Total decrease and increase in the gap with the `r params$aggregation` mean  
+### Total decrease and increase in the gap with the `r params$aggregation` mean
 
 The graph shows the sum of the yearly deviations from European average in each country.
-
 
 ```{r,echo=FALSE}
 
 altezzIG000 <- 3+6*(length(curCountries)/30)
 ```
-<img src="eurofound.jpg" width=50px height=40px>
-<br>
+
+<img src="eurofound.jpg" width="50px" height="40px"/> <br>
+
 ```{r,echo=FALSE,eval=F,fig.width=6,fig.height=altezzIG000}
 # already set
 # curCountries 
@@ -2324,8 +2170,6 @@ out_packed_list$Tot_inc_dec <- res_dev_pt$res
 res_dev_pt$res
 ```
 
-
-
 ```{r demeaGraph,echo=FALSE,eval=T,fig.width=6,fig.height=altezzIG000}
 
 res_dev_pt  <- demea_change(wkDF2,
@@ -2340,19 +2184,12 @@ out_packed_list$Tot_inc_dec <- res_dev_pt$res
 plot(res_dev_pt$res$res_graph)
 ```
 
-
-
 <br><br><br>
+
 <hr>
-<br>
-Last `r date()`
-<br>
 
-
+<br> Last `r date()` <br>
 
 ```{r,echo=FALSE,eval=T}
 save(out_packed_list,file = out_packed_name)
 ```
-
-
-

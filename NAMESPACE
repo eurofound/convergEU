@@ -45,6 +45,8 @@ export(smoo_dataset)
 export(ts_parlin)
 export(upDo_CoDi)
 importFrom(leaflet,leaflet)
-importFrom(rlang,":=")
-importFrom(rlang,.data)
+importFrom(rlang,
+  ":=",
+  .data
+)
 importFrom(tidyselect,all_of)

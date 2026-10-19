@@ -64,7 +64,7 @@ go_indica_fi <-  function(
   workTB = NULL,
   selfContained = FALSE,
   eige_layout = FALSE,
-  memStates = 'quintiles'# ('quintiles', 'default', 'custom', 'NUTS2')
+  memStates = 'quintiles'# ('quintiles', 'default', 'custom', 'NUTS2_2021', 'NUTS2_2024')
 ){
   if(is.na(workDF) & (!is.null(workTB))){
     curTB <-  workTB
@@ -96,7 +96,10 @@ go_indica_fi <-  function(
     }else if(memStates == 'custom')
     {
       sourceFile1 <- system.file("extdata", "indica_fi_4.Rmd", package = "convergEU")
-    }else if(memStates == 'NUTS2')
+    }else if(memStates == 'NUTS2_2021')
+    {
+      sourceFile1 <- system.file("extdata", "indica_fi_4.Rmd", package = "convergEU")
+    }else if(memStates == 'NUTS2_2024')
     {
       sourceFile1 <- system.file("extdata", "indica_fi_NUTS2.Rmd", package = "convergEU")
     }

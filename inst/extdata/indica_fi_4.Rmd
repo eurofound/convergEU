@@ -1647,7 +1647,7 @@ if(length(color_ind41) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind41[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind41[i, 1], 
-                           j = color_ind1[i, 2],
+                           j = color_ind41[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("1"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
@@ -1680,7 +1680,7 @@ if(length(color_ind44) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind44[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind44[i, 1], 
-                           j = color_ind4[i, 2],
+                           j = color_ind44[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("4"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),

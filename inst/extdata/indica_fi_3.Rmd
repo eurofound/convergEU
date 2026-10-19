@@ -64,6 +64,23 @@ knitr::opts_chunk$set(
   warning = FALSE,
   eval=TRUE
 )
+
+ quintile_ties <- function(x, n = 5, tie_rule = min) {
+  g <- dplyr::ntile(x, n)
+  ok <- !is.na(x)
+  g[ok] <- stats::ave(g[ok], x[ok], FUN = tie_rule)   # tied values share one group
+  g
+ }
+#  Identical to current output when there are no ties, so published fiches still reproduce in the normal case.
+# Group codes always stay within 1 to 5, so labels, the lowBest recoding and the change map keep working. With massive ties a group can end up empty.
+# The tie direction is an explicit argument (min = pessimistic, max = optimistic).
+
+tie_rule_fiche <- if (params$indiType == "highBest") min else max 
+# tie_rule only matters when a set of tied countries straddles a quintile boundary. ntile() breaks ties by position, so some of the tied countries land in group k and the rest in k+1. quintile_ties() then pulls them all into one group:
+# 
+# tie_rule = min puts the whole tied set in the lower group (k).
+# tie_rule = max puts the whole tied set in the upper group (k+1).
+ 
 ```
 
 
@@ -171,6 +188,9 @@ if(params$seleAggre != "custom"){
     nomiSele <- c(params$timeName,
                convergEU_glb()[[params$seleAggre]]$memberStates$codeMS)
     wkDF2 <-  wkDF1[, nomiSele]
+    if (names(wkDF2)[1] != "time") {
+  stop("Input data must have 'time' as its first column.")
+}
     # only countries
     sele_soli_ms <- convergEU_glb()[[params$seleAggre]]$memberStates$codeMS
 
@@ -782,10 +802,17 @@ altezzIG00 <- 3+7*(length(curCountries)/30)
 ```{r,echo=FALSE, fig.width=6,fig.height=5}
 
 #Alert indicator
-# create quintile function
-ntile_5  <- function(x){
-  ntile(x,5)
+      # create quintile function   >>deprecated<<
+      # ntile_5  <- function(x){
+      #   ntile(x,5)
+      # }
+
+# create quintile function - fix ties extreme cases- tied elements (countries, regions, etc) will be kept in the same quintile.
+
+ntile_5 <- function(x){
+  quintile_ties(x, 5,tie_rule = tie_rule_fiche)
 }
+
 
 # create quintile grouping matrix
 conv_quintile_groups <- as.data.frame(t(apply(wkDF2[,2:ncol(wkDF2)], 1, ntile_5)))
@@ -841,7 +868,8 @@ myTB3 <- tidyr::gather(wkDF2, key = "id",
                        value = "profile",etichY)
 myTB3$profile <- as.numeric(myTB3$profile)
 myTB4 <- myTB3 %>% group_by(time) %>% 
-  mutate(Cluster = ntile(profile, 5))
+  #mutate(Cluster = ntile(profile, 5))
+   mutate(Cluster = quintile_ties(profile, 5, tie_rule = tie_rule_fiche))
 # df <- myTB4 %>% filter( time %in% c(maxiT,miniT))
 df2 <- myTB4 %>% select(time, id, Cluster) %>% spread(time, Cluster)
 df2 <- df2[,c(1,2,ncol(df2))]
@@ -912,6 +940,10 @@ map_data$label_change<-factor(map_data$label_change,
                                        "+2 clusters or more"))
 ```
 
+
+
+# Quintile movement over time
+The maps present the quintiles  at start time, at end period time, and the change between start and end. Tied elements in the quintile will produce uneven group sizes near ties, and the side that grows is the side tid elements are sent to. *With massive ties, the neighbouring quintile can end up empty.
 
 <br>
 <img src="eurofound.jpg" width=50px height=40px>
@@ -1920,7 +1952,7 @@ if(length(color_ind41) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind41[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind41[i, 1], 
-                           j = color_ind1[i, 2],
+                           j = color_ind41[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("1"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
@@ -1953,7 +1985,7 @@ if(length(color_ind44) != 0){
   # flx2<- flx2 %>% 
   #bg(i = color_ind1[i, 1], j = color_ind44[i, 2], bg = '#dbe7c2')
   flx2 <- flx2 %>% compose(i = color_ind44[i, 1], 
-                           j = color_ind4[i, 2],
+                           j = color_ind44[i, 2],
                            part = "body",
                            value = as_paragraph("S", as_sub("4"),
                                                 as_chunk("\U1F815", props = fp_text_default(color = "#0D95D0",bold=TRUE)),
